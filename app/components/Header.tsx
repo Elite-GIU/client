@@ -15,13 +15,13 @@ const Header: React.FC = () => {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: '20px'  // Add padding at the bottom
+    paddingBottom: '20px'  
   });
 
   const toggleDropdown = () => {
     setDropdownStyle({
       ...dropdownStyle,
-      height: isDropdownOpen ? '0px' : '120px', // Increase height to 120px
+      height: isDropdownOpen ? '0px' : '150px', 
       overflow: 'hidden',
       transition: 'height 0.2s ease'
     });
@@ -35,14 +35,14 @@ const Header: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex-1 flex justify-center md:order-1">
           <Link href="/" className="flex items-center justify-center">
-            <TutorFlowLogo  padding='p-2'/>
+            <TutorFlowLogo size='text-2xl sm:text-4xl md:text-4xl' padding='p-2'/>
           </Link>
         </div>
         <div className="hidden md:flex md:flex-1 justify-center md:order-2">
           <SearchBox />
         </div>
-        <div className="hidden md:flex md:flex-1 justify-end md:order-3">
-          <Button label="Register" onClick={() => window.location.href = '/register'} />
+        <div className="hidden md:flex flex-1 justify-center md:order-3">
+          <Button label="Login" onClick={() => window.location.href = '/login'} />
         </div>
         <button className="md:hidden absolute right-4 top-4 focus:outline-none" onClick={toggleDropdown} style={{ padding: '8px' }}>
           <svg className={`h-6 w-6 transition-transform duration-300 ${isDropdownOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="black" viewBox="0 0 24 24" strokeWidth={2}>
@@ -50,12 +50,13 @@ const Header: React.FC = () => {
           </svg>
         </button>
       </div>
-      <div className="absolute top-full left-0 w-full bg-white shadow-md z-50" style={dropdownStyle}>
+      <div className="absolute left-0 w-full bg-white shadow-md z-50" style={dropdownStyle}>
         {isDropdownOpen && (
           <>
+            <div style={{ padding: '10px 0' }} />
             <SearchBox />
             <div style={{ padding: '10px 0' }} />
-            <Button label="Register" onClick={() => window.location.href = '/register'} />
+            <Button label="Login" onClick={() => window.location.href = '/login'} />
           </>
         )}
       </div>
