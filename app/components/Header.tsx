@@ -19,7 +19,7 @@ const Header: React.FC = () => {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '0px'  // Adjusted padding to reduce elongation
+    padding: '0px'  
   });
   const [userName, setUserName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -27,7 +27,7 @@ const Header: React.FC = () => {
   const toggleDropdown = () => {
     setDropdownStyle({
       ...dropdownStyle,
-      height: isDropdownOpen ? '0px' : '120px', // Reduced the height for less elongation
+      height: isDropdownOpen ? '0px' : '120px', 
       overflow: 'hidden',
       transition: 'height 0.2s ease'
     });

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import FormCard from '../../components/auth/FormCard';
 import InputField from '../../components/InputField';
@@ -8,16 +8,28 @@ import AuthButton from '../../components/auth/AuthButton';
 import TutorFlowLogo from '../../components/TutorFlowLogo';
 import { useRouter } from 'next/navigation';
 import { startAuthentication } from '@simplewebauthn/browser';
+import { getCookie } from 'cookies-next';
+import Loading from '@/app/loading';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [biometricCheckDone, setBiometricCheckDone] = useState(false); 
   const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
   const router = useRouter();
 
+  useEffect(() => {
+    setIsLoading(true);
+    const token = getCookie('Token');
+    if (token) {
+      setIsLoading(false);
+      router.push('/dashboard');
+    }
+    setIsLoading(false);
+  }, [router]
+  , );
   const handleInitialLogin = async () => {
     try {
       const fp = await FingerprintJS.load();
@@ -34,19 +46,19 @@ const LoginPage: React.FC = () => {
         throw new Error(`Server responded with status: ${response.status}`);
       }
 
+      
       const data = await response.json();
+      console.log(data);
       if (data.isRegistered) {
         setBiometricAvailable(true);
-        setMessage('Biometric authentication is available. Proceeding with biometric login.');
         handleBiometricLogin();
       } else {
         setBiometricAvailable(false);
-        setMessage('Biometric authentication not available. Please enter your password to proceed.');
       }
 
       setBiometricCheckDone(true);
     } catch (err) {
-      setError('Failed to check biometric authentication. Please try again.');
+      setError((err as Error).message || 'Biometric check failed');
       setBiometricCheckDone(true);
     }
   };
@@ -79,10 +91,11 @@ const LoginPage: React.FC = () => {
 
       const verificationResult = await verificationResponse.json();
 
+      
       if (!verificationResponse.ok) {
         throw new Error(verificationResult.message || 'Biometric verification failed');
       }
-
+      console.log(verificationResult);
       if (verificationResult.verified) {
         router.push('/dashboard'); 
       } else {
@@ -109,17 +122,20 @@ const LoginPage: React.FC = () => {
         router.push(`/biometric-setup?email=${encodeURIComponent(email)}`);
       }
     } catch (err) {
-      setError('Login failed');
+      setError((err as Error).message || 'Login failed');
     }
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
+  else {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4 sm:px-6">
       <div className="mb-12">
         <TutorFlowLogo size="text-5xl" />
       </div>
-      <FormCard title={biometricCheckDone ? (biometricAvailable ? 'Biometric Login' : 'Welcome Back') : 'Welcome Back'}>
-        {message && <p className="text-green-500 text-center mb-4">{message}</p>}
+      <FormCard title= 'Welcome Back'>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <InputField
           label="Email"
@@ -139,10 +155,10 @@ const LoginPage: React.FC = () => {
         )}
         <div className="flex justify-center">
           {!biometricCheckDone ? (
-            <AuthButton label="Check Biometric" onClick={handleInitialLogin} />
+            <AuthButton label="Login" onClick={handleInitialLogin} />
           ) : (
             biometricAvailable ? (
-              <AuthButton label="Proceed with Biometric Login" onClick={handleBiometricLogin} />
+              <AuthButton label="Login" onClick={handleBiometricLogin} />
             ) : (
               <AuthButton label="Login" onClick={handlePasswordLogin} />
             )
@@ -151,6 +167,7 @@ const LoginPage: React.FC = () => {
       </FormCard>
     </div>
   );
+}
 };
 
 export default LoginPage;

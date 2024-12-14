@@ -6,7 +6,7 @@ import axios from 'axios';
 export async function GET(req: Request) {
     try {
         const token = req.headers.get('Authorization');
-        const response = await axios.get('http://localhost:3001/api/v1/users/name', {
+        const response = await axios.get('http://localhost:3001/api/v1/users/', {
             headers: { Authorization: token }
         });
         if (response.status === 200) {
