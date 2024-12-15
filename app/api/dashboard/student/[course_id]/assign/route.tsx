@@ -24,7 +24,7 @@ export async function POST(req: Request, context: { params: Params }) {
     // Make the POST request to the external API
     const response = await axios.post(
       `http://localhost:3001/api/v1/student/courses/${course_id}/assign`,
-      {}, // If there is a request body, provide it here
+      {}, 
       {
         headers: {
           Authorization: token,
