@@ -6,13 +6,15 @@ interface Quiz {
     grade: number;
     courseName: string;
     moduleName: string;
+    finalGrade: string
   }
 
 export const QuizProgress: React.FC<Quiz> = ({
   quizId,
   grade, 
   courseName,
-  moduleName
+  moduleName,
+  finalGrade
 }) => {
   return (
     <>
@@ -46,7 +48,8 @@ export const QuizProgress: React.FC<Quiz> = ({
                 </button>
             </div>
             </div>
-            <ProgressBar percentage={grade} />
+            <ProgressBar percentage={grade} finalGrade={finalGrade} />
+
         </div>
     </>
   );

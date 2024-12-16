@@ -9,6 +9,7 @@ interface Quiz {
   courseName: string;
   moduleName: string;
   grade: number; 
+  finalGrade: string;
 }
 
 const MyQuizzesComponent = () => {
@@ -41,7 +42,6 @@ const MyQuizzesComponent = () => {
 
   useEffect(() => {
     fetchQuizzes();
-    console.log(quizzes);
   }, []);
 
 
@@ -63,6 +63,7 @@ const MyQuizzesComponent = () => {
               moduleName={quiz.moduleName}
               courseName={quiz.courseName}
               grade={quiz.grade}
+              finalGrade ={quiz.finalGrade}
             />
           </div>
         ))}

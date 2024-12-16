@@ -10,7 +10,6 @@ export async function GET(req: Request) {
             headers: { Authorization: token }
         });
         if (response.status === 200) {
-            console.log(response.data);
             return NextResponse.json(response.data);
 
         }
