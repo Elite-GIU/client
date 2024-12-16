@@ -54,22 +54,29 @@ const CurrentCourseProgress = ({ refresh }: { refresh: boolean }) => {
       <div className="space-y-4">
         {courses.map((course) => (
           <div key={course.courseId} className="border border-gray-200 rounded-lg p-6 mx-auto">
-            <div className="flex justify-between items-center">
-              <h3 className="text-base font-medium text-black">{course.courseName}</h3>
-              <span className="text-black text-sm">
-                {course.progress.toFixed(2)}% Complete
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 h-2 rounded-lg mt-4">
-              <div
-                className="h-2 rounded-lg"
-                style={{
-                  width: `${course.progress}%`,
-                  backgroundColor: course.progress >= 50 ? '#6a4eff' : '#ff7f7f',
-                }}
-              ></div>
+          <div className="flex justify-between items-center">
+            {/* Course Name on the far left */}
+            <h3 className="text-base font-medium text-black">{course.courseName}</h3>
+        
+            {/* Average Grade and Completion Percentage with proper spacing */}
+            <div className="flex items-center justify-end space-x-8">
+              <span className="text-black text-sm">Average Grade: {course.averageGrade.toFixed(2)}</span>
+              <span className="text-black text-sm">{course.progress.toFixed(2)}% Complete</span>
             </div>
           </div>
+        
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 h-2 rounded-lg mt-4">
+            <div
+              className="h-2 rounded-lg"
+              style={{
+                width: `${course.progress}%`,
+                backgroundColor: course.progress >= 50 ? '#6a4eff' : '#ff7f7f',
+              }}
+            ></div>
+          </div>
+        </div>
+        
         ))}
       </div>
     </div>
