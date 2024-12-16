@@ -55,11 +55,9 @@ const MyQuizzesComponent = () => {
 
   
   return (
-    <div className="bg-white shadow-lg rounded-lg p-12 mb-8">
-      <h2 className="text-3xl font-semibold mb-6 text-black">Quizzes Progress</h2>
       <div className="space-y-4">
         {quizzes.map((quiz, index) => (
-          <div key={quiz.quizId || index} className="border border-gray-200 rounded-lg p-6 mx-auto">
+          <div key={quiz.quizId || index} className="border border-gray-200 rounded-lg p-3 mx-auto">
             <QuizProgress
               quizId = {quiz.quizId}
               moduleName={quiz.moduleName}
@@ -69,7 +67,6 @@ const MyQuizzesComponent = () => {
           </div>
         ))}
       </div>
-    </div>
   );
   
 };
