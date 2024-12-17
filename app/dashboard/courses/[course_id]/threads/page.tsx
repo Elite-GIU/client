@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ThreadCard } from "./components/ThreadCard";
 import { Footer } from "./components/Footer";
 import Cookies from "js-cookie";
@@ -8,22 +8,31 @@ import { useParams, useRouter } from "next/navigation";
 import Loading from "./loading";
 import Link from "next/link";
 import { ThreadForm } from "./components/ThreadForm";
-import { Moon, Sun } from "lucide-react"; // Lucide for icons
+import { Moon, Sun } from "lucide-react";
 
 function ThreadsPage() {
-  const [threads, setThreads] = useState([]);
+  // For our thread list
+  const [threads, setThreads] = useState<{ _id: string; course_id: string; title: string; content: string }[]>([]);
+
+  // For loading and error and dark mode states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // For creatign a new thread
   const [isNewThread, setIsNewThread] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false); // Dark mode state
+
+  // Get course ID from URL
   const router = useRouter();
-  const { course_id } = useParams(); // Get course ID from URL
-   
+  const { course_id } = useParams();
+
+  // First fetch the threads for the course
   useEffect(() => {
-    console.log("course_id:", course_id);
-    if (!course_id) return; // Wait until `course_id` is available
+    // Wait until `course_id` is available
+    if (!course_id) return;
 
     const fetchThreads = async () => {
+      // Check if user is authenticated
       const token = Cookies.get("Token");
       if (!token) {
         router.push("/login");
@@ -31,9 +40,7 @@ function ThreadsPage() {
       }
 
       try {
-        console.log("Token found:", token);
-        console.log("Fetching threads for course:", course_id);
-
+        // Fetch threads for the course
         const response = await fetch(
           `/api/dashboard/courses?course_id=${course_id}`,
           {
@@ -48,9 +55,9 @@ function ThreadsPage() {
           throw new Error(`Error: ${response.statusText}`);
         }
 
+        // Set threads state with response data
         const { data } = await response.json();
         setThreads(data);
-        console.log("Threads:", data);
       } catch (error) {
         console.error("Error fetching threads:", error);
         setError("Failed to load threads. Please try again later.");
@@ -62,6 +69,7 @@ function ThreadsPage() {
     fetchThreads();
   }, [course_id, router]);
 
+  // Cool loading animation
   if (isLoading) {
     return <Loading />;
   }
@@ -82,9 +90,44 @@ function ThreadsPage() {
     );
   }
 
-  function handleNewThread(data: { title: string; content: string }): void {
+  // Create a new thread
+  async function handleNewThread(thread: { title: string; content: string }) {
+    // Make the thread form disappear
     setIsNewThread(false);
-    throw new Error("Function not implemented.");
+
+    const token = Cookies.get("Token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    // Create a new thread
+      try {
+        const response = await fetch(`/api/dashboard/courses/threads/post`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            course_id,
+            title: thread.title,
+            content: thread.content,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        // Add the new thread to the list
+        const { data } = await response.json();
+        setThreads((prev) => [...prev, data]);
+      } catch (error) {
+        console.error("Error creating thread:", error);
+        setError("Failed to create thread. Please try again later.");
+      }
+    
   }
 
   return (
@@ -146,6 +189,8 @@ function ThreadsPage() {
               <ThreadForm onSubmit={handleNewThread} isDarkMode={isDarkMode} />
             </div>
           )}
+
+          {/* Thread List */}
           <div
             className={`space-y-4 sm:space-y-6 ${
               isDarkMode ? "text-gray-300" : "text-black"
@@ -157,26 +202,14 @@ function ThreadsPage() {
                   href={{
                     pathname: `/dashboard/courses/${course_id}/threads/${thread._id}`,
                     query: {
-                      title: thread.title,
-                      author: thread.creator_id.name,
-                      role: thread.creator_id.role,
-                      created_at: thread.created_at,
-                      content: thread.description,
+                      thread,
                       isDarkMode: isDarkMode, // Pass dark mode state to the thread page
                     },
                   }}
                   legacyBehavior>
                   <a className="block">
                     {/* Ensure the entire block is clickable */}
-                    <ThreadCard
-                      title={thread.title}
-                      author={thread.creator_id.name}
-                      role={thread.creator_id.role}
-                      time={new Date(thread.created_at).toLocaleString()}
-                      content={thread.description}
-                      replies={thread.replies}
-                      isDarkMode={isDarkMode}
-                    />
+                    <ThreadCard thread={thread} isDarkMode={isDarkMode} />
                   </a>
                 </Link>
               ))}

@@ -15,12 +15,8 @@ function ThreadPage() {
   const router = useRouter();
   const { course_id, thread_id } = useParams(); // Get course and threadMessages IDs from URL
   const searchParams = useSearchParams();
-  const title = searchParams.get("title");
-  const author = searchParams.get("author");
-  const role = searchParams.get("role");
-  const created_at = searchParams.get("created_at");
-  const content = searchParams.get("content");
-
+  const thread = searchParams.get("thread");
+  // const parsedThread = thread ? JSON.parse(thread) : null;
   // Function to fetch thread messages
   const fetchThreadMessages = async () => {
     try {
@@ -181,15 +177,7 @@ function ThreadPage() {
       <div className="flex flex-col">
         <main className="flex-1 bg-[#F5F5F5] p-6 sm:p-10">
           {/* Thread Header */}
-          <ThreadCard
-            title={title || ""}
-            author={author || ""}
-            role={role || ""}
-            time={created_at || ""}
-            content={content || ""}
-            replies={threadMessages.length}
-            isDarkMode={false}
-          />
+          <ThreadCard thread={thread} isDarkMode={false} />
 
           {/* Thread Messages Section */}
           <div className="space-y-4">
