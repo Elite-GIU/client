@@ -2,17 +2,16 @@
 
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import React from 'react';
+import { Params } from 'next/dist/server/request/params';
 
-interface Params {
-  course_id: string;
-}
-
-export async function POST(req: Request, context: { params: Params }) {
+export async function GET(req: Request, context: { params: Promise<Params>}) {
   try {
     // Await the `params` object
-    const { course_id } = context.params;
 
-    if (!course_id) {
+    const {id} = await context.params;
+
+    if (!id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
     }
 
@@ -23,13 +22,11 @@ export async function POST(req: Request, context: { params: Params }) {
     }
 
     // Make the POST request to the external API
-    const response = await axios.post(
-      `http://localhost:3001/api/v1/dashboard/instructor/course/${course_id}`,
-      {}, 
+    const response = await axios.get(
+      `http://localhost:3001/api/v1/dashboard/instructor/course/${id}`, 
       {
         headers: {
           Authorization: token,
-          'Content-Type': 'application/json',
         },
       }
     );
