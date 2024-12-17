@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ThreadCard } from "./components/ThreadCard";
 import { Footer } from "./components/Footer";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
+
+import { Card, Skeleton } from "@nextui-org/react";
+import Loading from "./loading";
+import Link from "next/link";
 
 function ThreadsPage() {
   const [threads, setThreads] = useState([]);
@@ -27,6 +31,8 @@ function ThreadsPage() {
       try {
         console.log("Token found:", token);
         console.log("Fetching threads for course:", course_id);
+        //await new Promise((resolve) => setTimeout(resolve, 4000)); // 4 seconds delay
+
         const response = await fetch(
           `/api/dashboard/courses?course_id=${course_id}`,
           {
@@ -56,46 +62,70 @@ function ThreadsPage() {
   }, [course_id, router]);
 
   if (isLoading) {
-    return (
-      <div className="text-black min-h-screen flex items-center justify-center bg-white">
-        <p>Loading threads...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-red-600">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <p className="text-red-600 text-center">{error}</p>
       </div>
     );
   }
-  console.log(
-    "Threadsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss: " +
-      threads
-  );
+
   return (
     <div className="min-h-screen bg-white">
-      <div className="flex">
-        <main className="flex-1 bg-[#F5F5F5] p-10">
-          <div className="mb-8">
-            <h2 className="text-4xl font-bold text-black">Course Discussion</h2>
-            <p className="text-xl font-medium mt-2 text-black">
-              Join the conversation and get help from your peers
-            </p>
-          </div>
+      <div className="flex flex-col">
+        <main className="flex-1 bg-[#F5F5F5] p-6 sm:p-10">
+          <div className="flex justify-between items-center mb-6 sm:mb-8">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-black">
+                Course Discussion
+              </h2>
+              <p className="text-lg sm:text-xl font-medium mt-2 text-black">
+                Join the conversation and get help from your peers
+              </p>
+            </div>
 
-          <div className="text-black space-y-6">
+            {/* New Thread Button */}
+            <button
+              //Onclick implement create new thread
+              className="w-[177px] h-[52px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-[15px] shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                letterSpacing: "-0.02em",
+              }}>
+              New Thread
+            </button>
+          </div>
+          <div className="text-black space-y-4 sm:space-y-6">
             {Array.isArray(threads) &&
               threads.map((thread: any) => (
-                <ThreadCard
+                <Link
                   key={thread.course_id}
-                  title={thread.title}
-                  author={thread.creator_id.name}
-                  time={thread.created_at}
-                  content={thread.description}
-                  replies={thread.replies}
-                />
+                  href={{
+                    pathname: `/dashboard/courses/${course_id}/threads/${thread._id}`,
+                    query: {
+                      title: thread.title,
+                      author: thread.creator_id.name,
+                      role: thread.creator_id.role,
+                      created_at: thread.created_at,
+                      content: thread.description,
+                    },
+                  }}
+                  legacyBehavior>
+                  <a className="block">
+                    {/* Ensure the entire block is clickable */}
+                    <ThreadCard
+                      title={thread.title}
+                      author={thread.creator_id.name}
+                      role={thread.creator_id.role}
+                      time={new Date(thread.created_at).toLocaleString()}
+                      content={thread.description}
+                      replies={thread.replies}
+                    />
+                  </a>
+                </Link>
               ))}
           </div>
         </main>
