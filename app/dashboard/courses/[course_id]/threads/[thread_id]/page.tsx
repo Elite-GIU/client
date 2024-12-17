@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Loading from "../loading";
+import { ThreadCard } from "../components/ThreadCard";
 
 function ThreadPage() {
   const [threadMessages, setThreadMessages] = useState([]); // Holds all thread messages
@@ -115,6 +116,7 @@ function ThreadPage() {
     );
     const data = await response.json();
     console.log("ppp", data.data);
+    fetchMessageReplies(message_id); // Fetch replies again to update the UI
   };
   // Fetch thread messages on mount
   useEffect(() => {
@@ -179,16 +181,15 @@ function ThreadPage() {
       <div className="flex flex-col">
         <main className="flex-1 bg-[#F5F5F5] p-6 sm:p-10">
           {/* Thread Header */}
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-2xl font-bold mb-2 text-black">{title}</h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Posted by {author} •{" "}
-              {created_at
-                ? new Date(created_at).toLocaleString()
-                : "Unknown date"}
-            </p>
-            <p className="text-lg text-black">{content}</p>
-          </div>
+          <ThreadCard
+            title={title || ""}
+            author={author || ""}
+            role={role || ""}
+            time={created_at || ""}
+            content={content || ""}
+            replies={threadMessages.length}
+            isDarkMode={false}
+          />
 
           {/* Thread Messages Section */}
           <div className="space-y-4">
