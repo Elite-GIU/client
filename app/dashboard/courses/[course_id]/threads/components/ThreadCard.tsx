@@ -19,7 +19,7 @@ interface ThreadCardProps {
 }
 
 export function ThreadCard({
-  thread: { title, creator_id, created_at, description, replies },
+  thread: { title, creator_id, createdAt, description, replies },
   isDarkMode,
 }: ThreadCardProps) {
   const name = creator_id?.name || "Unknown";
@@ -37,7 +37,7 @@ export function ThreadCard({
         className={`text-sm mt-1 ${
           isDarkMode ? "text-gray-300" : "text-[#4D4D4D]"
         }`}>
-        Posted by {name} • {new Date(created_at).toLocaleString()}
+        Posted by {name} • {new Date(createdAt).toLocaleString()}
       </p>
       <p className="text-xl font-semibold mt-4">{description}</p>
       <div

@@ -12,7 +12,9 @@ import { Moon, Sun } from "lucide-react";
 
 function ThreadsPage() {
   // For our thread list
-  const [threads, setThreads] = useState<{ _id: string; course_id: string; title: string; content: string }[]>([]);
+  const [threads, setThreads] = useState<
+    { _id: string; course_id: string; title: string; content: string }[]
+  >([]);
 
   // For loading and error and dark mode states
   const [isLoading, setIsLoading] = useState(true);
@@ -102,32 +104,35 @@ function ThreadsPage() {
     }
 
     // Create a new thread
-      try {
-        const response = await fetch(`/api/dashboard/courses/threads/post`, {
+    try {
+      const response = await fetch(
+        `/api/dashboard/courses/threads/post?course_id=${course_id}`,
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            course_id,
             title: thread.title,
             content: thread.content,
           }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
         }
+      );
 
-        // Add the new thread to the list
-        const { data } = await response.json();
-        setThreads((prev) => [...prev, data]);
-      } catch (error) {
-        console.error("Error creating thread:", error);
-        setError("Failed to create thread. Please try again later.");
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
       }
-    
+
+      // Add the new thread to the list
+      const { data } = await response.json();
+      console.log("New thread:", data);
+      console.log("Response:", response);
+      setThreads((prev) => [data, ...prev]);
+    } catch (error) {
+      console.error("Error creating thread:", error);
+      setError("Failed to create thread. Please try again later.");
+    }
   }
 
   return (
@@ -202,7 +207,7 @@ function ThreadsPage() {
                   href={{
                     pathname: `/dashboard/courses/${course_id}/threads/${thread._id}`,
                     query: {
-                      thread,
+                      thread: JSON.stringify(thread),
                       isDarkMode: isDarkMode, // Pass dark mode state to the thread page
                     },
                   }}

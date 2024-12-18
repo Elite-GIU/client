@@ -7,7 +7,9 @@ import Loading from "../loading";
 import { ThreadCard } from "../components/ThreadCard";
 
 function ThreadPage() {
-  const [threadMessages, setThreadMessages] = useState([]); // Holds all thread messages
+  const [threadMessages, setThreadMessages] = useState<
+    { _id: string; thread_id: string; sender_id: string; content: string }[]
+  >([]);
   const [threadMessageReplies, setThreadMessageReplies] = useState<any>({}); // Now an object holding replies per message ID
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,8 @@ function ThreadPage() {
   const { course_id, thread_id } = useParams(); // Get course and threadMessages IDs from URL
   const searchParams = useSearchParams();
   const thread = searchParams.get("thread");
-  // const parsedThread = thread ? JSON.parse(thread) : null;
+  const isDarkMode = searchParams.get("isDarkMode");
+  const parsedThread = thread ? JSON.parse(thread) : null;
   // Function to fetch thread messages
   const fetchThreadMessages = async () => {
     try {
@@ -111,7 +114,6 @@ function ThreadPage() {
       }
     );
     const data = await response.json();
-    console.log("ppp", data.data);
     fetchMessageReplies(message_id); // Fetch replies again to update the UI
   };
   // Fetch thread messages on mount
@@ -172,13 +174,65 @@ function ThreadPage() {
     );
   }
 
+  const handleThreadMessageSubmit = async (thread_id: string) => {
+    if (replyText.trim()) {
+      const token = Cookies.get("Token");
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/dashboard/courses/threads/messages/new?course_id=${course_id}&thread_id=${thread_id}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              content: replyText,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to post message");
+        }
+
+        const { data } = await response.json();
+        setThreadMessages((prev) => [data, ...prev]);
+        setReplyText(""); // Clear the input after submission
+      } catch (err: any) {
+        setError(err.message || "Something went wrong while posting message");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="flex flex-col">
         <main className="flex-1 bg-[#F5F5F5] p-6 sm:p-10">
           {/* Thread Header */}
-          <ThreadCard thread={thread} isDarkMode={false} />
-
+          <ThreadCard thread={parsedThread} isDarkMode={false} />
+          <br />
+          <div>
+            <div className="text-black">
+              <textarea
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                placeholder="Write a message..."
+                onChange={(e) => setReplyText(e.target.value)} // Update state on change
+              />
+            </div>
+            <div className="items-center flex flex-col">
+              <button
+                onClick={() => handleThreadMessageSubmit(parsedThread._id)} // Call the function when the button is clicked
+                className="self-center w-[97px] h-[32px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-[15px] shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]">
+                Post
+              </button>
+            </div>
+          </div>
           {/* Thread Messages Section */}
           <div className="space-y-4">
             {threadMessages && threadMessages.length > 0 ? (
@@ -188,7 +242,7 @@ function ThreadPage() {
                   className="bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col space-y-2 relative">
                   <p className="text-sm text-gray-700 font-semibold">
                     {message.sender_id.name} •{" "}
-                    {new Date(message.created_at).toLocaleString()}
+                    {new Date(message.createdAt).toLocaleString()}
                   </p>
                   <p className="text-black">{message.content}</p>
 
@@ -215,7 +269,7 @@ function ThreadPage() {
                                 className="bg-gray-200 p-4 rounded-lg">
                                 <p className="text-sm text-gray-700 font-semibold">
                                   {reply.sender_id.name} •{" "}
-                                  {new Date(reply.created_at).toLocaleString()}
+                                  {new Date(reply.createdAt).toLocaleString()}
                                 </p>
                                 <p className="text-black">{reply.content}</p>
                               </div>
