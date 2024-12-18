@@ -42,7 +42,7 @@ const QuizzesPage = () => {
   }, [router]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+    return <div>Loading...</div>;
   }
 
   if (role === 'student') {
@@ -62,7 +62,7 @@ const QuizzesPage = () => {
     );
   }
 
-  return null; // Fallback if the role is undefined or not matched
+  return null; 
 };
 
 export default QuizzesPage;

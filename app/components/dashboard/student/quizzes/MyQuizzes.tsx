@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { QuizProgress } from './QuizProgress';
+import Loading from '@/app/loading';
 
 interface Quiz {
   quizId: string;
@@ -55,21 +56,23 @@ const MyQuizzesComponent = () => {
 
   
   return (
+    <div className="bg-white shadow-lg rounded-lg p-12 mb-8">
+      <h1 className="text-3xl font-semibold mb-6 text-black">My Quizzes</h1>
       <div className="space-y-4">
         {quizzes.map((quiz, index) => (
-          <div key={quiz.quizId || index} className="border border-gray-200 rounded-lg p-3 mx-auto">
+          <div key={quiz.quizId || index}>
             <QuizProgress
-              quizId = {quiz.quizId}
+              quizId={quiz.quizId}
               moduleName={quiz.moduleName}
               courseName={quiz.courseName}
               grade={quiz.grade}
-              finalGrade ={quiz.finalGrade}
+              finalGrade={quiz.finalGrade}
             />
           </div>
         ))}
       </div>
+    </div>
   );
-  
-};
+};  
 
 export default MyQuizzesComponent;

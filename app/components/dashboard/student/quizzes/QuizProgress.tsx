@@ -1,4 +1,3 @@
-import { ProgressBar } from "@/app/components/ProgressBar";
 import * as React from "react";
 
 interface Quiz {
@@ -6,7 +5,7 @@ interface Quiz {
     grade: number;
     courseName: string;
     moduleName: string;
-    finalGrade: string
+    finalGrade: string;
   }
 
 export const QuizProgress: React.FC<Quiz> = ({
@@ -18,14 +17,15 @@ export const QuizProgress: React.FC<Quiz> = ({
 }) => {
   return (
     <>
-        <div className="flex flex-col px-7 py-7 mb-0 w-full bg-white rounded-2xl border border-solid border-neutral-400 border-opacity-50 max-md:px-5 max-md:mb-2.5 max-md:max-w-full">
-            <div className="flex flex-wrap gap-5 justify-between w-full font-medium leading-tight max-md:mr-2 max-md:max-w-full">
+        <div className="border border-gray-200 rounded-lg p-6 mx-auto">
+            <div className="flex justify-between items-center">
             <div className="flex gap-4">
                 <div className="flex flex-col grow shrink-0 my-auto basis-0 w-fit">
-                <div className="text-xl tracking-tight text-black">
+                
+                <div className="text-xl font-medium text-black">
                     {moduleName}
                 </div>
-                <div className="self-start mt-1.5 text-base tracking-tight text-neutral-500">
+                <div className="text-base text-sm text-gray-500">
                     {courseName}
                 </div>
                 </div>
@@ -48,8 +48,16 @@ export const QuizProgress: React.FC<Quiz> = ({
                 </button>
             </div>
             </div>
-            <ProgressBar percentage={grade} finalGrade={finalGrade} />
-
+            {/* <ProgressBar percentage={grade} finalGrade={finalGrade} /> */}
+            <div className="w-full bg-gray-200 h-2 rounded-lg mt-4">
+            <div
+                className="h-2 rounded-lg"
+                style={{
+                width: `${grade}%`,
+                backgroundColor: finalGrade === `passed` ? '#6a4eff' : '#ff7f7f',
+                }}
+            ></div>
+            </div>
         </div>
     </>
   );
