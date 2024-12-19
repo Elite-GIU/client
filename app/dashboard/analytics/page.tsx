@@ -9,6 +9,7 @@ const AnalyticsPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const [downloadStatus, setDownloadStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -41,6 +42,43 @@ const AnalyticsPage = () => {
     fetchRole();
   }, [router]);
 
+  const handleDownloadAnalytics = async () => {
+    const token = Cookies.get('Token');
+    if (!token) {
+      setDownloadStatus('Error: No authentication token found');
+      return;
+    }
+
+    try {
+      setDownloadStatus('Downloading...');
+
+      const response = await fetch('/api/dashboard/instructor/analytics/courses/download', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      const blob = await response.blob();
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'InstructorReport.xlsx'; 
+      link.click(); 
+
+      setDownloadStatus('Download successful!');
+      
+    } catch (error) {
+      console.error('Error downloading analytics:', error);
+      setDownloadStatus('Error: Failed to download file');
+    }
+  };
+
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -48,6 +86,14 @@ const AnalyticsPage = () => {
   if (role === 'instructor') {
     return (
       <div>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleDownloadAnalytics}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Download Analytics
+          </button>
+        </div>
         <CourseAnalyticsComponent />
       </div>
     );
