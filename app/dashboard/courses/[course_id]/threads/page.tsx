@@ -138,7 +138,7 @@ function ThreadsPage() {
   return (
     <div
       className={`min-h-screen ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-slate-400 text-black"
+        isDarkMode ? "bg-gray-900 text-white" : "bg-slate-500 text-black"
       }`}>
       <div className="flex flex-col">
         <header className="p-4 flex justify-end">

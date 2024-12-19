@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Loading from "../loading";
 import { ThreadCard } from "../components/ThreadCard";
+import { Moon, Sun } from "lucide-react";
 
 function ThreadPage() {
   const [threadMessages, setThreadMessages] = useState<
@@ -18,7 +19,7 @@ function ThreadPage() {
   const { course_id, thread_id } = useParams(); // Get course and threadMessages IDs from URL
   const searchParams = useSearchParams();
   const thread = searchParams.get("thread");
-  const isDarkMode = searchParams.get("isDarkMode");
+  const isDarkMode = searchParams.get("isDarkMode") === "true";
   const parsedThread = thread ? JSON.parse(thread) : null;
   // Function to fetch thread messages
   const fetchThreadMessages = async () => {
@@ -211,35 +212,51 @@ function ThreadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="flex flex-col">
-        <main className="flex-1 bg-[#F5F5F5] p-6 sm:p-10">
+      <header className="p-4 flex justify-end bg-slate-500">
+          <button
+            className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
+              isDarkMode
+                ? "bg-gray-800 text-yellow-400 hover:bg-gray-700"
+                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+            }`}
+            aria-label="Toggle Dark Mode">
+            {isDarkMode ? (
+              <Moon className="w-6 h-6" />
+            ) : (
+              <Sun className="w-6 h-6" />
+            )}
+          </button>
+        </header>
+        <main className="flex-1 bg-[#F5F5FF] p-6 sm:p-10 space-y-4">
           {/* Thread Header */}
           <ThreadCard thread={parsedThread} isDarkMode={false} />
           <br />
-          <div>
+          <div className="w-full space-y-4">
             <div className="text-black">
               <textarea
-                className="w-full p-2 border border-gray-300 rounded-lg"
+                className="w-full p-2 border rounded-lg"
                 placeholder="Write a message..."
                 onChange={(e) => setReplyText(e.target.value)} // Update state on change
               />
             </div>
-            <div className="items-center flex flex-col">
+            <div className="flex justify-start pl-1">
               <button
                 onClick={() => handleThreadMessageSubmit(parsedThread._id)} // Call the function when the button is clicked
-                className="self-center w-[97px] h-[32px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-[15px] shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]">
+                className="self-center w-[97px] h-[32px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-md shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]">
                 Post
               </button>
             </div>
           </div>
+          <br />
           {/* Thread Messages Section */}
           <div className="space-y-4">
             {threadMessages && threadMessages.length > 0 ? (
               threadMessages.map((message: any) => (
                 <div
                   key={message._id}
-                  className="bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col space-y-2 relative">
+                  className="bg-white p-4 rounded-lg shadow-sm flex flex-col space-y-2 relative">
                   <p className="text-sm text-gray-700 font-semibold">
                     {message.sender_id.name} •{" "}
                     {new Date(message.createdAt).toLocaleString()}
@@ -260,7 +277,7 @@ function ThreadPage() {
                   {/* Display Replies for This Message */}
                   {threadMessageReplies[message._id] ? (
                     threadMessageReplies[message._id].length > 0 ? (
-                      <div className="mt-4">
+                      <div className="mt-4 w-9/12">
                         <div className="space-y-2">
                           {threadMessageReplies[message._id].map(
                             (reply: any) => (
@@ -284,7 +301,7 @@ function ThreadPage() {
                     <br></br>
                   )}
 
-                  <div>
+                  <div className="w-full space-y-4">
                     <div className="text-black">
                       <textarea
                         className="w-full p-2 border border-gray-300 rounded-lg"
@@ -292,11 +309,13 @@ function ThreadPage() {
                         onChange={(e) => setReplyText(e.target.value)} // Update state on change
                       />
                     </div>
-                    <button
-                      onClick={() => handleReplySubmit(message._id)} // Call the function when the button is clicked
-                      className="w-[97px] h-[32px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-[15px] shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]">
-                      Post
-                    </button>
+                    <div className="flex justify-start">
+                      <button
+                        onClick={() => handleReplySubmit(message._id)} // Call the function when the button is clicked
+                        className="w-[97px] h-[32px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-md shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]">
+                        Post
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))

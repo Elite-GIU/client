@@ -149,12 +149,6 @@ const MyCoursesComponent = () => {
                     className="text-blue-600 text-sm font-medium hover:underline">
                     Continue Course...
                   </a>
-                  <a
-                    href={`/chat/threads`}
-                    className="text-blue-600 text-sm font-medium
-                    hover:underline">
-                    Join Discussion...
-                  </a>
                   <Link
                     href={`/dashboard/courses/${course._id}/threads`}
                     legacyBehavior>
