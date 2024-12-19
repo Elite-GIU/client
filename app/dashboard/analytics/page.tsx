@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
 import Cookies from 'js-cookie';
+import CourseAnalyticsComponent from '@/app/components/dashboard/instructor/analytics/CourseAnalytics';
 
-const CoursesPage = () => {
+const AnalyticsPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -42,27 +42,18 @@ const CoursesPage = () => {
   }, [router]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
-  }
-
-  if (role === 'student') {
-    return (
-      <div>
-        <MyCoursesComponent />
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (role === 'instructor') {
     return (
       <div>
-        <h1 className="text-3xl font-semibold mb-6">Instructor Dashboard</h1>
-        <div>TODO: Implement instructor courses functionality</div>
+        <CourseAnalyticsComponent />
       </div>
     );
   }
 
-  return null; // Fallback if the role is undefined or not matched
+  return null; 
 };
 
-export default CoursesPage;
+export default AnalyticsPage;

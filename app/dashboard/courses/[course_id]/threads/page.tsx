@@ -1,48 +1,38 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ThreadCard } from "./components/ThreadCard";
-import { Footer } from "./components/Footer";
+import { ThreadCard } from "../../../../components/dashboard/threads/ThreadCard";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import Loading from "./loading";
 import Link from "next/link";
-import { ThreadForm } from "./components/ThreadForm";
+import { ThreadForm } from "../../../../components/dashboard/threads/ThreadForm";
 import { Moon, Sun } from "lucide-react";
 
 function ThreadsPage() {
-  // For our thread list
   const [threads, setThreads] = useState<
     { _id: string; course_id: string; title: string; content: string }[]
   >([]);
 
-  // For loading and error and dark mode states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // For creatign a new thread
   const [isNewThread, setIsNewThread] = useState(false);
 
-  // Get course ID from URL
   const router = useRouter();
   const { course_id } = useParams();
 
-  // First fetch the threads for the course
   useEffect(() => {
-    // Wait until `course_id` is available
     if (!course_id) return;
 
     const fetchThreads = async () => {
-      // Check if user is authenticated
       const token = Cookies.get("Token");
       if (!token) {
         router.push("/login");
         return;
       }
-
       try {
-        // Fetch threads for the course
         const response = await fetch(
           `/api/dashboard/courses?course_id=${course_id}`,
           {
@@ -52,12 +42,9 @@ function ThreadsPage() {
             },
           }
         );
-
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
-
-        // Set threads state with response data
         const { data } = await response.json();
         setThreads(data);
       } catch (error) {
@@ -126,8 +113,6 @@ function ThreadsPage() {
 
       // Add the new thread to the list
       const { data } = await response.json();
-      console.log("New thread:", data);
-      console.log("Response:", response);
       setThreads((prev) => [data, ...prev]);
     } catch (error) {
       console.error("Error creating thread:", error);
@@ -222,7 +207,6 @@ function ThreadsPage() {
         </main>
       </div>
 
-      <Footer />
     </div>
   );
 }

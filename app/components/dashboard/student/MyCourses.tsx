@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import Link from "next/link";
 
 interface Course {
   _id: string;
@@ -145,18 +144,11 @@ const MyCoursesComponent = () => {
                 </p>
                 <div className="mt-4">
                   <a
-                    href={`/dashboard/course/${course._id}`}
+                    href={`/dashboard/courses/${course._id}`}
                     className="text-blue-600 text-sm font-medium hover:underline">
                     Continue Course...
                   </a>
-                  <Link
-                    href={`/dashboard/courses/${course._id}/threads`}
-                    legacyBehavior>
-                    <a className="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                      Chat
-                    </a>
-                  </Link>
-                </div>
+               </div>
               </div>
             </div>
           ))}
