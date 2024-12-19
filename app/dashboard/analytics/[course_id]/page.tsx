@@ -51,6 +51,12 @@ const CourseAnalyticsPage = () => {
   if (role === 'instructor') {
     return (
       <div>
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-gray-500 text-white rounded-md mb-4"
+        >
+          Back
+        </button>
         <ModuleAnalyticsComponent courseId={courseId} />
       </div>
     );
