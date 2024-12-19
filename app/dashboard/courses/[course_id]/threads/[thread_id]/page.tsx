@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Loading from "../loading";
-import { ThreadCard } from "../components/ThreadCard";
+import { ThreadCard } from "../../../../../components/dashboard/threads/ThreadCard";
 import { Moon, Sun } from "lucide-react";
 
 function ThreadPage() {

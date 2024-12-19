@@ -1,11 +1,12 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';  // This import assumes next/navigation exists; otherwise, use next/router
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
+import CourseSidebar from '../components/dashboard/student/courses/CoursesSidebar';
 import { FaHome, FaBook, FaQuestionCircle, FaUserAlt } from 'react-icons/fa';
-import Cookies from 'js-cookie'; 
+import Cookies from 'js-cookie';
 import Loading from '../loading';
 
 const studentSidebarItems = [
@@ -26,6 +27,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const token = Cookies.get('Token');
@@ -56,19 +58,23 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     fetchRole();
-
   }, [router]);
 
   if (isLoading) {
     return <Loading />;
   }
 
+  // Determine if the current route is for course details
+  const isCoursePage = pathname.includes('/dashboard/courses/') && !pathname.endsWith('/dashboard/courses');
+
   return (
     <div className="flex flex-col h-screen">
       <DashboardHeader toggleSidebar={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <div className="flex flex-1 overflow-hidden">
-        <DashboardSidebar items={role === 'instructor' ? instructorSidebarItems : studentSidebarItems} isOpen={isOpen} setIsOpen={setIsOpen} />
-        <main className="flex-1 p-4 overflow-auto sm:ml-64">
+        {isCoursePage
+          ? <CourseSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+          : <DashboardSidebar items={role === 'instructor' ? instructorSidebarItems : studentSidebarItems} isOpen={isOpen} setIsOpen={setIsOpen} />}
+        <main className={`${isCoursePage ? "sm:ml-96" : "sm:ml-64"} flex-1 p-4 overflow-auto`}>
           {children}
         </main>
       </div>
