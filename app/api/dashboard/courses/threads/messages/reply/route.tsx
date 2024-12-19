@@ -5,14 +5,12 @@ import axios from "axios";
 
 export async function POST(req: Request) {
   try {
-    console.log("ok 0");
     // Extract course ID from the URL parameters
     const url = new URL(req.url);
     const course_id = url.searchParams.get("course_id");
     const thread_id = url.searchParams.get("thread_id");
     const message_id = url.searchParams.get("message_id");
     const { content } = await req.json();
-    console.log(message_id);
     if (!course_id) {
       return NextResponse.json(
         { error: "Course ID is required" },
@@ -30,8 +28,6 @@ export async function POST(req: Request) {
     }
 
     // Make the GET request to the backend service to fetch course threads
-    console.log("ok 911");
-    console.log(content);
     const response = await axios.post(
       `http://localhost:3001/api/v1/chat/forums/courses/${course_id}/threads/${thread_id}/messages/${message_id}`,
       {
@@ -44,7 +40,6 @@ export async function POST(req: Request) {
         },
       }
     );
-    console.log("response:", response);
     if (response.status === 200) {
       // Respond with the fetched threads
       return NextResponse.json(response.data);

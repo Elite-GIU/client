@@ -126,8 +126,6 @@ function ThreadsPage() {
 
       // Add the new thread to the list
       const { data } = await response.json();
-      console.log("New thread:", data);
-      console.log("Response:", response);
       setThreads((prev) => [data, ...prev]);
     } catch (error) {
       console.error("Error creating thread:", error);

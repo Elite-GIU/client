@@ -3,21 +3,8 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-interface Params {
-  course_id: string; // Course ID
-}
-
 export async function GET(req: Request) {
   try {
-    // Extract course ID from the URL parameters
-    const url = new URL(req.url);
-    const course_id  = url.searchParams.get('course_id');
-    if (!course_id) {
-      return NextResponse.json(
-        { error: "Course ID is required" },
-        { status: 400 }
-      );
-    }
 
     // Extract the authorization token from headers
     const token = req.headers.get("Authorization");
@@ -30,7 +17,7 @@ export async function GET(req: Request) {
 
     // Make the GET request to the backend service to fetch course threads
     const response = await axios.get(
-      `http://localhost:3001/api/v1/chat/forums/courses/${course_id}/`,
+      `http://localhost:3001/api/v1/notification/getNotifications`,
       {
         headers: {
           Authorization: token,
