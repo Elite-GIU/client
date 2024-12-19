@@ -24,6 +24,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   const router = useRouter();
   useEffect(() => {
+    let interval: NodeJS.Timeout;
     try {
       const token = Cookies.get("Token");
       if (!token) {
@@ -47,6 +48,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         
       };
       fetchNotifications();
+      interval = setInterval(fetchNotifications, 10000);
+      return () => clearInterval(interval);
+
     } catch (error) {
       console.error("Failed to fetch notification", error);
     }

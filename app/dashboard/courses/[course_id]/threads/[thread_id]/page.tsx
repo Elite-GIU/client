@@ -50,8 +50,6 @@ function ThreadPage() {
         return;
       }
 
-      // Replace with your actual API call to fetch replies for a specific message
-      console.log("Fetching replies for message ID: " + message_id);
       const response = await fetch(
         `/api/dashboard/courses/threads/messages?course_id=${course_id}&thread_id=${thread_id}&message_id=${message_id}`,
         {
@@ -66,7 +64,6 @@ function ThreadPage() {
       }
 
       const { data } = await response.json();
-      console.log("dataz", data);
 
       // Update the state with the specific message replies
       setThreadMessageReplies((prevReplies: any) => {
@@ -74,10 +71,8 @@ function ThreadPage() {
           ...prevReplies,
           [message_id]: data,
         };
-        console.log("Updated threadMessageReplies state:", updatedReplies);
         return updatedReplies;
       });
-      console.log("show me", threadMessageReplies.message_id);
     } catch (err: any) {
       setError(err.message || "Something went wrong while fetching replies");
     } finally {
@@ -93,9 +88,7 @@ function ThreadPage() {
   };
 
   const replyToMessage = async (replyText: string, message_id: string) => {
-    console.log(
-      "ok bro I got the message: " + replyText + " reply to: " + message_id
-    );
+   
     const token = Cookies.get("Token");
     if (!token) {
       router.push("/login");
@@ -143,7 +136,6 @@ function ThreadPage() {
         }
 
         const { data } = await response.json();
-        console.log("Replies for message:", data.replies);
         setThreadMessages(data);
       } catch (error) {
         setError("Failed to load thread messages. Please try again later.");
