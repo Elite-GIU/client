@@ -103,7 +103,6 @@ const MyCoursesComponentInstructor =  () => {
               window.location.reload();
 
           }else {
-              console.log(response)
               alert('Error submitting Form! Please try again')
           }
         }catch(error){

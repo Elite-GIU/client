@@ -95,7 +95,6 @@ const InstructorCourse =  (props: any) => {
                 alert('Module added successfully! Refresh the page to see the result');
 
             }else {
-                console.log(response)
                 alert('Error submitting Form! Please try again')
             }
         }catch(error){
@@ -123,7 +122,6 @@ const InstructorCourse =  (props: any) => {
                 alert('Module updated successfully! Refresh the page to see the result');
 
             }else {
-                console.log(response)
                 alert('Error submitting Form! Please try again')
             }
         }catch(error){

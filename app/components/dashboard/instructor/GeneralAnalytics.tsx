@@ -82,7 +82,7 @@ const GeneralAnalytics = () => {
             <p className="text-black text-lg">Course: <span className="font-medium">{highestRatedCourse?.title || 'N/A'}</span></p>
             <div className="flex items-center space-x-2">
               <p className="text-black text-lg">Rating:</p>
-              {highestRatedCourse?.averageRating ? (
+              {highestRatedCourse?.averageRating != null ? (
                 <>
                   {renderStars(highestRatedCourse.averageRating)}
                   <span className="text-black text-sm ml-2">({highestRatedCourse.averageRating.toFixed(1)} / 5)</span>
