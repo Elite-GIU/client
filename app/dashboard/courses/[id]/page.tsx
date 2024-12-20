@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
-import MyCoursesComponentInstructor from '../../components/dashboard/instructor/MyCourses'
+import InstructorCourse from '../../../components/dashboard/instructor/InstructorCourse'
 import Cookies from 'js-cookie';
+import { Params } from 'next/dist/server/request/params';
 
-const CoursesPage = () => {
+const CoursePage =  (context : { params: Promise<Params>}) => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [courseId, setCourseId] = useState<any>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -42,22 +43,33 @@ const CoursesPage = () => {
     fetchRole();
   }, [router]);
 
+  useEffect(() => {
+    async function awaitParams() {
+        const {id} = await context.params;
+        setCourseId(id); 
+    }
+    awaitParams();
+  }, []);
+
   if (isLoading) {
     return <div>Loading...</div>; // Show a loading state
   }
 
   if (role === 'student') {
     return (
-      <div>
-        <MyCoursesComponent />
-      </div>
+      <h1>
+        Unauthorized
+      </h1>
     );
   }
 
   if (role === 'instructor') {
     return (
       <div>
-        <MyCoursesComponentInstructor/>
+        {courseId ? 
+        <InstructorCourse id = {courseId}/> :
+        'loading'
+        }
       </div>
     );
   }
@@ -65,4 +77,4 @@ const CoursesPage = () => {
   return null; // Fallback if the role is undefined or not matched
 };
 
-export default CoursesPage;
+export default CoursePage;
