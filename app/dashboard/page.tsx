@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import CurrentCourseProgress from '../components/dashboard/student/CurrentCourseProgress';
 import RecommendedForYou from '../components/dashboard/student/RecommendedForYou';
 import Cookies from 'js-cookie';
+import GeneralAnalytics from '../components/dashboard/instructor/GeneralAnalytics';
 
 const DashboardPage = () => {
   const [refreshCurrentCourses, setRefreshCurrentCourses] = useState(false);
@@ -64,7 +65,12 @@ return (
   );
   }
   if (role === 'instructor') {
-    return <div>TODO: Instructor dashboard</div>;
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-6 text-black">Instructor Dashboard</h1>
+        <GeneralAnalytics />
+      </div>
+    );
   }
 };
 

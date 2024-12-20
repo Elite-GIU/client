@@ -43,8 +43,6 @@ const StudentAnalyticsComponent: React.FC<Props> = ({ courseId }) => {
       setStudents(data.students);
       setCurrentPage(data.currentPage)
       setTotalPages(data.totalPages)
-      console.log(students)
-      console.log(currentPage)
     } catch (err) {
       setError((err as Error).message || 'Something went wrong.');
     } finally {
