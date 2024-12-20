@@ -145,7 +145,7 @@ const MyCoursesComponent = () => {
                 </p>
                 <div className="mt-4">
                   <a
-                    href={`/dashboard/course/${course._id}`}
+                    href={`/dashboard/courses/${course._id}`}
                     className="text-blue-600 text-sm font-medium hover:underline">
                     Continue Course...
                   </a>
