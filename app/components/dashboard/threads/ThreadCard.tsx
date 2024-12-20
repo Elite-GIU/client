@@ -1,52 +1,128 @@
-import React from "react";
-import { Mail } from "lucide-react";
+import React, { useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { BiSolidCommentDots } from "react-icons/bi";
+import { FiEdit, FiTrash2, FiSave } from "react-icons/fi";
+import ThreadRole from './ThreadRole'; // Import the new component
+import { usePathname } from 'next/navigation';
 
 interface ThreadCardProps {
-  thread: any; // Accept thread object
-  /*
-{
+  thread: {
+    _id: string;
     title: string;
-    creator_id?: {
+    creator_id: {
       name: string;
       role: string;
     };
-    created_at: string;
+    createdAt: string;
     description: string;
-    replies: number;
-  }; 
-  */
-  isDarkMode: boolean; // Accept dark mode state
+    messagesCount: number;
+  };
+  onUpdate?: (updatedTitle: string, updatedDescription: string) => void; // Optional function to handle update
+  onDelete?: () => void; // Optional function to handle delete
 }
 
-export function ThreadCard({
-  thread: { title, creator_id, createdAt, description, replies },
-  isDarkMode,
-}: ThreadCardProps) {
-  const name = creator_id?.name || "Unknown";
-  const role = creator_id?.role || "user";
-  const threadType = role === "instructor" ? "Announcement: " : "Discussion: ";
+const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(thread.title);
+  const [description, setDescription] = useState(thread.description);
+  const pathname = usePathname();
+
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate(title, description);
+    }
+    setIsEditing(false);
+  };
+
+  const isThreadsPage = pathname.endsWith('/threads');
+
   return (
-    <div
-      className={`hover:bg-gray-200 rounded-2xl shadow-md p-6 ${
-        isDarkMode
-          ? "bg-gray-700 text-white hover:bg-gray-600"
-          : "bg-white text-black"
-      }`}>
-      <h3 className="text-3xl font-bold">{threadType + title}</h3>
-      <p
-        className={`text-sm mt-1 ${
-          isDarkMode ? "text-gray-300" : "text-[#4D4D4D]"
-        }`}>
-        Posted by {name} • {new Date(createdAt).toLocaleString()}
+    <div className="bg-white rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
+      {/* Thread Title and Timestamp */}
+      <div className="flex justify-between items-center mb-4">
+        {isEditing ? (
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="border rounded-md p-2 w-full text-lg font-semibold text-black"
+          />
+        ) : (
+          <h3 className="font-semibold text-2xl text-black">{thread.title}</h3>
+        )}
+        <span className="text-sm text-gray-500">
+          {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
+        </span>
+      </div>
+
+      {/* Thread Creator and Role */}
+      <p className="text-sm text-gray-800 flex items-center gap-2">
+        Posted by {thread.creator_id.name}
+        <ThreadRole role={thread.creator_id.role} />
       </p>
-      <p className="text-xl font-semibold mt-4">{description}</p>
-      <div
-        className={`mt-6 pt-4 border-t flex items-center gap-2 ${
-          isDarkMode ? "border-gray-500" : "border-[#CDCDCD]"
-        }`}>
-        <Mail className="w-5 h-5" />
-        <span className="text-xl font-semibold">{replies} replies</span>
+
+      {/* Thread Description */}
+      {isEditing ? (
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="border rounded-md p-2 w-full text-gray-800 mt-2"
+          rows={3}
+        ></textarea>
+      ) : (
+        <p className="mt-2 text-lg text-gray-900">
+          {thread.description.length > 150
+            ? thread.description.substring(0, 150) + '...'
+            : thread.description}
+        </p>
+      )}
+
+      {/* Divider */}
+      <hr className="my-3 border-gray-300" />
+
+      {/* Actions and Replies Count */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center text-black hover:underline cursor-pointer">
+          <BiSolidCommentDots className="text-xl text-gray-600 mr-2" />
+          <p>{thread.messagesCount} {thread.messagesCount === 1 ? 'reply' : 'replies'}</p>
+        </div>
+
+        {/* Update and Delete Buttons (Visible only for thread master and not on threads page) */}
+        {thread.creator_id.role === 'thread master' && !isThreadsPage && (onUpdate || onDelete) && (
+          <div className="flex gap-3">
+            {onUpdate && (
+              isEditing ? (
+                <button
+                  onClick={handleSave}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
+                >
+                  <FiSave className="text-lg" />
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300"
+                >
+                  <FiEdit className="text-lg" />
+                  Update
+                </button>
+              )
+            )}
+            {onDelete && (
+              <button
+                onClick={onDelete}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300"
+              >
+                <FiTrash2 className="text-lg" />
+                Delete
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default ThreadCard;

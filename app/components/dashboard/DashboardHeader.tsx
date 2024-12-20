@@ -1,7 +1,7 @@
-import React, { use, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TutorFlowLogo from "../TutorFlowLogo";
 import Link from "next/link";
-import NotificationsPopup from "../NotificationsPopup"; // Import the NotificationsPopup component
+import NotificationsPopup from "../NotificationsPopup";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +16,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   toggleSidebar,
 }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<{ _id: string; title: string; message: string }[]>([]); // Add notifications state
+  const [notifications, setNotifications] = useState<{ _id: string; title: string; message: string }[]>([]);
 
   const toggleNotifications = () => {
     setIsNotificationsOpen((prev) => !prev);
@@ -54,7 +54,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     } catch (error) {
       console.error("Failed to fetch notification", error);
     }
-  }, []);
+  }, [router]);
 
   return (
     <header className="bg-white shadow-md h-16 flex justify-between items-center px-6">
