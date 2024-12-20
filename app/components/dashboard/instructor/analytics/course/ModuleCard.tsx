@@ -15,6 +15,28 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
   lowestGrade,
   averageRating,
 }) => {
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <div className="flex items-center">
+        {Array(fullStars)
+          .fill(0)
+          .map((_, index) => (
+            <span key={`full-${index}`} className="text-yellow-400 text-lg">★</span>
+          ))}
+        {halfStar && <span className="text-yellow-400 text-lg">☆</span>}
+        {Array(emptyStars)
+          .fill(0)
+          .map((_, index) => (
+            <span key={`empty-${index}`} className="text-gray-300 text-lg">★</span>
+          ))}
+      </div>
+    );
+  };
+
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">{moduleName}</h3>
@@ -31,9 +53,12 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
           <span className="text-gray-600">Lowest Grade:</span>
           <span className="font-medium text-gray-900">{lowestGrade}%</span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span className="text-gray-600">Average Rating:</span>
-          <span className="font-medium text-gray-900">{averageRating.toFixed(1)}/5</span>
+          <div className="flex items-center space-x-2">
+            <span className="font-medium text-gray-900">{averageRating.toFixed(1)}/5</span>
+            {renderStars(averageRating)}
+          </div>
         </div>
       </div>
     </div>

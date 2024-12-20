@@ -49,6 +49,28 @@ export const MetricsDisplay: React.FC<CourseMetrics> = ({
     { name: "Excellent", value: excellent, color: "#34d399" },
   ];
 
+  const renderStars = (rating: number) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <div className="flex items-center">
+        {Array(fullStars)
+          .fill(0)
+          .map((_, index) => (
+            <span key={`full-${index}`} className="text-yellow-400 text-lg">★</span>
+          ))}
+        {halfStar && <span className="text-yellow-400 text-lg">☆</span>}
+        {Array(emptyStars)
+          .fill(0)
+          .map((_, index) => (
+            <span key={`empty-${index}`} className="text-gray-300 text-lg">★</span>
+          ))}
+      </div>
+    );
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4 mt-4 p-4 bg-gray-50 rounded-lg">
       {/* Metrics */}
@@ -66,9 +88,10 @@ export const MetricsDisplay: React.FC<CourseMetrics> = ({
       </div>
       <div className="flex flex-col">
         <span className="text-sm text-gray-600">Rating</span>
-        <span className="text-lg font-semibold text-black">
-          {averageRating.toFixed(1)}/5.0
-        </span>
+        <div className="flex items-center space-x-2">
+          <span className="text-lg font-semibold text-black">{averageRating.toFixed(1)}/5.0</span>
+          {renderStars(averageRating)}
+        </div>
       </div>
 
       {/* Grades Distribution Chart */}
