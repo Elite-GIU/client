@@ -21,9 +21,9 @@ export async function GET(req: Request, context: { params: Promise<Params>}) {
       return NextResponse.json({ error: 'Authorization token is required' }, { status: 401 });
     }
 
-    // Make the POST request to the external API
+    // Make the get request to the external API
     const response = await axios.get(
-      `http://localhost:3001/api/v1/dashboard/instructor/course/${id}`, 
+      `http://localhost:3001/api/v1/instructor/courses/${id}/modules?sortOrder=asc`, 
       {
         headers: {
           Authorization: token,
