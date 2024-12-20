@@ -25,7 +25,7 @@ const MyCoursesComponentInstructor =  () => {
         try {
             
             const token = Cookies.get('Token');
-            const response = await fetch(`/api/dashboard/instructor/course`, {
+            const response = await fetch(`/api/instructor/course`, {
                 method: 'GET',
                 headers: {Authorization: `Bearer ${token}`}
             });
@@ -82,6 +82,38 @@ const MyCoursesComponentInstructor =  () => {
         return null;
     }
 
+    const handleDeletion = async (e: any, id: string) => {
+        e.preventDefault();
+
+        try {
+
+          if(!window.confirm("are you sure you want to delete this course ?"))
+            return;
+
+          const token = Cookies.get('Token');
+          const response = await fetch(`/api/instructor/course/${id}/delete`, {
+              method: 'DELETE',
+              headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
+          });
+
+          if(response.ok){
+
+              alert('Course Deleted successfully');
+
+              window.location.reload();
+
+          }else {
+              console.log(response)
+              alert('Error submitting Form! Please try again')
+          }
+        }catch(error){
+
+          console.error("Error: ", error);
+
+        }
+
+    }
+
     return (
         <>
         {courses.length === 0 ? (
@@ -113,8 +145,15 @@ const MyCoursesComponentInstructor =  () => {
                       <a
                         href={`/dashboard/courses/${course._id}`}
                         className="text-blue-600 text-sm font-medium hover:underline"
+                        style={{marginRight: "1rem"}}
                       >
                         Course Details
+                      </a>
+                      <a
+                        onClick={(e) => handleDeletion(e, course._id)}
+                        className="text-blue-600 text-sm font-medium hover:underline"
+                      >
+                        Delete Course
                       </a>
                     </div>
                   </div>

@@ -8,6 +8,7 @@ interface Module {
    nrOfQuestions: number;
    assessmentType: string;
    passingGrade: number;
+   _id: string;
 }
 
 const InstructorCourse =  (props: any) => {
@@ -16,6 +17,7 @@ const InstructorCourse =  (props: any) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
+    const [showEdit, setShowEdit] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         nrOfQuestions: 0,
@@ -23,13 +25,20 @@ const InstructorCourse =  (props: any) => {
         passingGrade: 50,
         courseId: props.id
     });
+    const [updateData, setUpdateData] = useState({
+        numberOfQuestions: 0,
+        assessmentType: 'mcq',
+        passingGrade: 50,
+        courseId: props.id,
+        moduleId: ''
+    })
 
     const fetchCourse = async() => {
 
         try {
             
             const token = Cookies.get('Token');
-            const response = await fetch(`/api/dashboard/instructor/course/${props.id}`, {
+            const response = await fetch(`/api/instructor/course/${props.id}`, {
                 method: 'GET',
                 headers: {Authorization: `Bearer ${token}`}
             });
@@ -75,7 +84,7 @@ const InstructorCourse =  (props: any) => {
         try {
 
             const token = Cookies.get('Token');
-            const response = await fetch('/api/dashboard/instructor/course/module', {
+            const response = await fetch('/api/instructor/course/module', {
                 method: 'POST',
                 headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
                 body: JSON.stringify(formData)
@@ -94,6 +103,50 @@ const InstructorCourse =  (props: any) => {
             console.error("Error: ", error);
 
         }
+    }
+
+    const handleUpdate = async (e: any) => {
+
+        e.preventDefault();
+
+        try {
+
+            const token = Cookies.get('Token');
+            const response = await fetch(`/api/instructor/course/module/${updateData.moduleId}`, {
+                method: 'PUT',
+                headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
+                body: JSON.stringify(updateData)
+            });
+
+            if(response.ok){
+
+                alert('Module updated successfully! Refresh the page to see the result');
+
+            }else {
+                console.log(response)
+                alert('Error submitting Form! Please try again')
+            }
+        }catch(error){
+
+            console.error("Error: ", error);
+
+        }
+
+    }
+    
+    const handleEditDataChange = async (e: any) => {
+        const { name, value } = e.target;
+        setUpdateData({ ...updateData, [name]: value });
+    }
+
+    const openEditMenu = async (module: Module) => {
+        const {nrOfQuestions, passingGrade, assessmentType, _id} = module;
+        if(module._id != updateData.moduleId)
+            setShowEdit(true);
+        else 
+            setShowEdit(!showEdit);
+        setShowForm(false);
+        setUpdateData({...updateData, numberOfQuestions: nrOfQuestions, passingGrade, assessmentType, moduleId: _id});
     }
 
     return (
@@ -127,6 +180,7 @@ const InstructorCourse =  (props: any) => {
                         <a
                             className="text-blue-600 text-sm font-medium hover:underline"
                             style={{marginTop: '3rem'}} 
+                            onClick={() => openEditMenu(module)}
                         >
                             edit
                         </a>
@@ -137,7 +191,7 @@ const InstructorCourse =  (props: any) => {
                 <a 
                     className="text-blue-600 text-sm font-medium hover:underline"
                     style={{marginTop: '2rem'}}
-                    onClick={() => setShowForm(!showForm)}
+                    onClick={() => {setShowForm(!showForm); setShowEdit(false)}}
                 >
                     {showForm? "Hide" : "Add Module"}
                 </a>
@@ -201,7 +255,60 @@ const InstructorCourse =  (props: any) => {
                                 type="submit"
                                 className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
                             >
-                                Submit
+                                Add
+                            </button>
+                        </form>
+                    )
+                }
+                {
+                    showEdit && 
+                    (
+                        <form
+                            onSubmit={handleUpdate}
+                            className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
+                            style={{ textAlign: 'left' }}
+                        >
+                            <div className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700">Number of Questions</label>
+                                <input
+                                type="number"
+                                name="numberOfQuestions"
+                                value={updateData.numberOfQuestions}
+                                onChange={handleEditDataChange}
+                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                                required
+                                />
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700">Assessment Type</label>
+                                <input
+                                type="text"
+                                name="assessmentType"
+                                value={updateData.assessmentType}
+                                onChange={handleEditDataChange}
+                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                                required
+                                />
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="block text-sm font-medium text-gray-700">Passing Grade</label>
+                                <input
+                                type="number"
+                                name="passingGrade"
+                                value={updateData.passingGrade}
+                                onChange={handleEditDataChange}
+                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                                required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
+                            >
+                                Update
                             </button>
                         </form>
                     )
