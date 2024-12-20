@@ -1,23 +1,30 @@
-"use client";
-
+'use client'
 import React, { useEffect, useState } from "react";
-import { ThreadCard } from "../../../../components/dashboard/threads/ThreadCard";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
 import Loading from "./loading";
 import Link from "next/link";
 import { ThreadForm } from "../../../../components/dashboard/threads/ThreadForm";
-import { Moon, Sun } from "lucide-react";
+import ThreadCard  from "../../../../components/dashboard/threads/ThreadCard";
+
+interface Threads {
+  _id: string;
+  course_id: string;
+  title: string;
+  creator_id: {
+    _id: string;
+    name: string;
+    role: string;
+  };
+  createdAt: string;
+  description: string;
+  messagesCount: number;
+}
 
 function ThreadsPage() {
-  const [threads, setThreads] = useState<
-    { _id: string; course_id: string; title: string; content: string }[]
-  >([]);
-
+  const [threads, setThreads] = useState<Threads[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   const [isNewThread, setIsNewThread] = useState(false);
 
   const router = useRouter();
@@ -33,20 +40,20 @@ function ThreadsPage() {
         return;
       }
       try {
-        const response = await fetch(
-          `/api/dashboard/courses?course_id=${course_id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`/api/dashboard/courses/${course_id}/threads`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
         const { data } = await response.json();
-        setThreads(data);
+        setThreads(data.map((thread: Threads) => ({
+          ...thread,
+          creator_id: thread.creator_id || { _id: '', name: 'Unknown', role: 'User' }, 
+        })));
       } catch (error) {
         console.error("Error fetching threads:", error);
         setError("Failed to load threads. Please try again later.");
@@ -58,30 +65,19 @@ function ThreadsPage() {
     fetchThreads();
   }, [course_id, router]);
 
-  // Cool loading animation
   if (isLoading) {
     return <Loading />;
   }
 
   if (error) {
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center ${
-          isDarkMode ? "bg-gray-800" : "bg-white"
-        } px-4`}>
-        <p
-          className={`${
-            isDarkMode ? "text-red-400" : "text-red-600"
-          } text-center`}>
-          {error}
-        </p>
+      <div className="min-h-screen flex items-center justify-center bg-white px-4">
+        <p className="text-red-600 text-center">{error}</p>
       </div>
     );
   }
 
-  // Create a new thread
   async function handleNewThread(thread: { title: string; content: string }) {
-    // Make the thread form disappear
     setIsNewThread(false);
 
     const token = Cookies.get("Token");
@@ -90,28 +86,23 @@ function ThreadsPage() {
       return;
     }
 
-    // Create a new thread
     try {
-      const response = await fetch(
-        `/api/dashboard/courses/threads/post?course_id=${course_id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            title: thread.title,
-            content: thread.content,
-          }),
-        }
-      );
+      const response = await fetch(`/api/dashboard/courses/${course_id}/threads/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: thread.title,
+          description: thread.content,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
 
-      // Add the new thread to the list
       const { data } = await response.json();
       setThreads((prev) => [data, ...prev]);
     } catch (error) {
@@ -121,92 +112,33 @@ function ThreadsPage() {
   }
 
   return (
-    <div
-      className={`min-h-screen ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-slate-500 text-black"
-      }`}>
-      <div className="flex flex-col">
-        <header className="p-4 flex justify-end">
-          <button
-            onClick={() => setIsDarkMode((prev) => !prev)}
-            className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${
-              isDarkMode
-                ? "bg-gray-800 text-yellow-400 hover:bg-gray-700"
-                : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
-            aria-label="Toggle Dark Mode">
-            {isDarkMode ? (
-              <Moon className="w-6 h-6" />
-            ) : (
-              <Sun className="w-6 h-6" />
-            )}
-          </button>
-        </header>
-        <main
-          className={`flex-1 ${
-            isDarkMode ? "bg-gray-800" : "bg-[#F5F5FF]"
-          } p-6 sm:p-10`}>
-          <div className="flex justify-between items-center mb-6 sm:mb-8">
-            <div>
-              <h2
-                className={`text-3xl sm:text-4xl font-bold ${
-                  isDarkMode ? "text-white" : "text-black"
-                }`}>
-                Course Discussion
-              </h2>
-              <p
-                className={`text-lg sm:text-xl font-medium mt-2 ${
-                  isDarkMode ? "text-gray-300" : "text-black"
-                }`}>
-                Join the conversation and get help from your peers
-              </p>
-            </div>
+    <div className="flex flex-col">
+      <div className="flex justify-between items-center mb-6 sm:mb-2 p-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-black">
+          Course Discussion
+          <p className="text-sm text-gray-600 mt-2">
+            Join the conversation and get help from your peers
+          </p>
+        </h2>
 
-            {/* New Thread Button */}
-            <button
-              onClick={() => setIsNewThread(true)}
-              className="w-[177px] h-[52px] bg-[#98C1D9] text-white text-[20px] font-semibold flex items-center justify-center rounded-[15px] shadow-[0px_1px_17.1px_rgba(0,_0,_0,_0.25)]"
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                letterSpacing: "-0.02em",
-              }}>
-              New Thread
-            </button>
-          </div>
-          {/* Thread Form */}
-          {isNewThread && (
-            <div className="mb-6 sm:mb-8">
-              <ThreadForm onSubmit={handleNewThread} isDarkMode={isDarkMode} />
-            </div>
-          )}
-
-          {/* Thread List */}
-          <div
-            className={`space-y-4 sm:space-y-6 ${
-              isDarkMode ? "text-gray-300" : "text-black"
-            }`}>
-            {Array.isArray(threads) &&
-              threads.map((thread: any) => (
-                <Link
-                  key={thread.course_id}
-                  href={{
-                    pathname: `/dashboard/courses/${course_id}/threads/${thread._id}`,
-                    query: {
-                      thread: JSON.stringify(thread),
-                      isDarkMode: isDarkMode, // Pass dark mode state to the thread page
-                    },
-                  }}
-                  legacyBehavior>
-                  <a className="block">
-                    {/* Ensure the entire block is clickable */}
-                    <ThreadCard thread={thread} isDarkMode={isDarkMode} />
-                  </a>
-                </Link>
-              ))}
-          </div>
-        </main>
+        <button onClick={() => setIsNewThread(true)}
+          className="w-[150px] h-[44px] bg-[#98C1D9] text-white text-[16px] font-medium flex items-center justify-center rounded-[12px] shadow-md"
+          >
+          New Thread
+        </button>
       </div>
-
+      {isNewThread && (
+        <ThreadForm onSubmit={handleNewThread} />
+      )}
+      <div className="space-y-4 sm:space-y-6 p-4">
+        {threads.map((thread) => (
+          <Link key={thread._id} href={`/dashboard/courses/${course_id}/threads/${thread._id}`} legacyBehavior>
+            <a className="block">
+              <ThreadCard thread={thread} />
+            </a>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
