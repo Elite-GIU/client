@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
+import { useParams, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import ModuleAnalyticsComponent from '@/app/components/dashboard/instructor/analytics/course/ModuleAnalytics';
 
-const CoursesPage = () => {
+
+const CourseAnalyticsPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { course_id  } = useParams();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -42,27 +44,25 @@ const CoursesPage = () => {
   }, [router]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+    return <div>Loading...</div>;
   }
-
-  if (role === 'student') {
-    return (
-      <div>
-        <MyCoursesComponent />
-      </div>
-    );
-  }
+  const courseId = typeof course_id === 'string' ? course_id : '';
 
   if (role === 'instructor') {
     return (
       <div>
-        <h1 className="text-3xl font-semibold mb-6">Instructor Dashboard</h1>
-        <div>TODO: Implement instructor courses functionality</div>
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-gray-500 text-white rounded-md mb-4"
+        >
+          Back
+        </button>
+        <ModuleAnalyticsComponent courseId={courseId} />
       </div>
     );
   }
 
-  return null; // Fallback if the role is undefined or not matched
+  return null; 
 };
 
-export default CoursesPage;
+export default CourseAnalyticsPage;

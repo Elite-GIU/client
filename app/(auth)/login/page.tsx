@@ -48,7 +48,6 @@ const LoginPage: React.FC = () => {
 
       
       const data = await response.json();
-      console.log(data);
       if (data.isRegistered) {
         setBiometricAvailable(true);
         handleBiometricLogin();
@@ -95,7 +94,6 @@ const LoginPage: React.FC = () => {
       if (!verificationResponse.ok) {
         throw new Error(verificationResult.message || 'Biometric verification failed');
       }
-      console.log(verificationResult);
       if (verificationResult.verified) {
         router.push('/dashboard'); 
       } else {
