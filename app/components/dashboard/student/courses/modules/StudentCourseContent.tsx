@@ -75,7 +75,11 @@ const StudentCourseContent: React.FC<{
     <div className="flex flex-col rounded-none">
       <div className="flex flex-col px-20 pt-10 pb-44 w-full bg-neutral-100 max-md:px-5 max-md:pb-24 max-md:max-w-full">
         <div className="flex flex-col px-16 pt-12 pb-96 w-full bg-white rounded-2xl shadow-[0px_1px_17px_rgba(0,0,0,0.25)] max-md:px-5 max-md:pb-24 max-md:max-w-full">
-          <CourseHeader title={content.title} rating={5} totalRatings={45} />
+          <CourseHeader
+            title={content.title}
+            course_id={course_id}
+            module_id={module_id}
+          />
           <RenderContent
             content={content.content}
             type={content.type}

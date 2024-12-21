@@ -1,9 +1,3 @@
-export interface StarRatingProps {
-  rating: number;
-  maxStars?: number;
-  size?: 'sm' | 'md' | 'lg';
-}
-
 export interface ContentDetailsProps {
   description: string;
   last_updated: Date;
@@ -11,6 +5,6 @@ export interface ContentDetailsProps {
 
 export interface CourseHeaderProps {
   title: string;
-  rating: number;
-  totalRatings: number;
+  course_id: string;
+  module_id: string;
 }

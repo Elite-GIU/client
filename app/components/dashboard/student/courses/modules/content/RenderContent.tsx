@@ -28,8 +28,7 @@ const RenderContent: React.FC<{
       const fileURL = URL.createObjectURL(response.data);
       setFilePath(fileURL); // Set the file URL in state
     } catch (error) {
-      console.error("Error fetching file:", error);
-      setFilePath(null); // Handle the error appropriately
+      setFilePath(null);
     }
   };
 
