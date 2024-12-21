@@ -30,7 +30,6 @@ export async function GET(req: Request, context: { params: Params }) {
         }
       }
     )
-    console.log(response.data.data)
     if (response.status === 200) {
       return NextResponse.json(response.data.data)
     }    
@@ -71,7 +70,6 @@ export async function POST(req: Request, context: { params: Params }) {
         }
       }
     )
-    console.log(response.data.data)
     if (response.status === 201) {
       return NextResponse.json(response.data.data)
     }

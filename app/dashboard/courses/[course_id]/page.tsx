@@ -78,7 +78,7 @@ const CoursePage =  (context : { params: Promise<Params>}) => {
     );
   }
 
-  return null; // Fallback if the role is undefined or not matched
+  return null; 
 };
 
 export default CoursePage;
