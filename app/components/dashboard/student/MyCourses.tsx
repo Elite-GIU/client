@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 interface Course {
   _id: string;
   title: string;
   category: string;
-  difficulty_level: number; 
+  difficulty_level: number;
   image_path: string;
   instructor_id: string;
   instructor_name: string | null;
@@ -20,37 +20,42 @@ const MyCoursesComponent = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Function to fetch instructor name
-  const fetchInstructorName = async (instructorId: string): Promise<string | null> => {
+  const fetchInstructorName = async (
+    instructorId: string
+  ): Promise<string | null> => {
     try {
-      const token = Cookies.get('Token');
-      const response = await fetch(`/api/dashboard/student/get-instructor-name?userId=${instructorId}`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const token = Cookies.get("Token");
+      const response = await fetch(
+        `/api/dashboard/student/get-instructor-name?userId=${instructorId}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch instructor name.');
+        throw new Error("Failed to fetch instructor name.");
       }
 
       const data = await response.json();
-      return 'Instructor: ' + data;
+      return "Instructor: " + data;
     } catch (err) {
-      console.error('Error fetching instructor name:', err);
-      return 'Unknown Instructor'; // Fallback
+      console.error("Error fetching instructor name:", err);
+      return "Unknown Instructor"; // Fallback
     }
   };
 
   // Function to fetch courses
   const fetchCourses = async () => {
     try {
-      const token = Cookies.get('Token');
-      const response = await fetch('/api/dashboard/student/course', {
-        method: 'GET',
+      const token = Cookies.get("Token");
+      const response = await fetch("/api/dashboard/student/course", {
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch courses.');
+        throw new Error("Failed to fetch courses.");
       }
 
       const data: Course[] = await response.json();
@@ -58,14 +63,16 @@ const MyCoursesComponent = () => {
       // Fetch instructor names for all courses
       const coursesWithInstructorNames = await Promise.all(
         data.map(async (course) => {
-          const instructorName = await fetchInstructorName(course.instructor_id);
+          const instructorName = await fetchInstructorName(
+            course.instructor_id
+          );
           return { ...course, instructor_name: instructorName };
         })
       );
 
       setCourses(coursesWithInstructorNames);
     } catch (err) {
-      setError((err as Error).message || 'Something went wrong.');
+      setError((err as Error).message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +114,7 @@ const MyCoursesComponent = () => {
   }
 
   return (
-      <>
+    <>
       {courses.length === 0 ? (
         <div className="text-center text-gray-500 text-sm">
           No courses found. Start learning by enrolling in a course!
@@ -117,8 +124,7 @@ const MyCoursesComponent = () => {
           {courses.map((course) => (
             <div
               key={course._id}
-              className="border border-gray-200 rounded-lg shadow-md"
-            >
+              className="border border-gray-200 rounded-lg shadow-md">
               <img
                 src={course.image_path}
                 alt={course.title}
@@ -130,7 +136,7 @@ const MyCoursesComponent = () => {
                   {course.title}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {course.instructor_name || 'Unknown Instructor'}
+                  {course.instructor_name || "Unknown Instructor"}
                 </p>
                 {/* Truncate description to two lines */}
                 <p className="text-sm text-gray-600 mt-1 line-clamp-1">
@@ -138,12 +144,11 @@ const MyCoursesComponent = () => {
                 </p>
                 <div className="mt-4">
                   <a
-                    href={`/dashboard/course/${course._id}`}
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                  >
+                    href={`/dashboard/courses/${course._id}`}
+                    className="text-blue-600 text-sm font-medium hover:underline">
                     Continue Course...
                   </a>
-                </div>
+               </div>
               </div>
             </div>
           ))}

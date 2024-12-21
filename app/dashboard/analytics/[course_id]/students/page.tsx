@@ -1,16 +1,17 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import InstructorCourse from '../../../components/dashboard/instructor/InstructorCourse'
+import { useParams, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-import { Params } from 'next/dist/server/request/params';
+import StudentAnalyticsComponent from '@/app/components/dashboard/instructor/analytics/course/students/StudentAnalytics';
+import Pagination from '@/app/components/Pagination';
 
-const CoursePage =  (context : { params: Promise<Params>}) => {
+
+const StudentAnalyticsPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [courseId, setCourseId] = useState<any>("");
   const router = useRouter();
+  const { course_id } = useParams();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -43,38 +44,30 @@ const CoursePage =  (context : { params: Promise<Params>}) => {
     fetchRole();
   }, [router]);
 
-  useEffect(() => {
-    async function awaitParams() {
-        const {id} = await context.params;
-        setCourseId(id); 
-    }
-    awaitParams();
-  }, []);
-
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+    return <div>Loading...</div>;
   }
 
-  if (role === 'student') {
-    return (
-      <h1>
-        Unauthorized
-      </h1>
-    );
-  }
+  const courseId = typeof course_id === 'string' ? course_id : '';
 
   if (role === 'instructor') {
     return (
       <div>
-        {courseId ? 
-        <InstructorCourse id = {courseId}/> :
-        'loading'
-        }
+        <button
+          onClick={() => router.back()}
+          className="px-4 py-2 bg-gray-500 text-white rounded-md mb-4"
+        >
+          Back
+        </button>
+        <StudentAnalyticsComponent
+          courseId={courseId}
+        />
       </div>
     );
   }
 
-  return null; // Fallback if the role is undefined or not matched
+  return null;
 };
 
-export default CoursePage;
+export default StudentAnalyticsPage;
+

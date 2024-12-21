@@ -6,7 +6,7 @@ import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
 import MyCoursesComponentInstructor from '../../components/dashboard/instructor/MyCourses'
 import Cookies from 'js-cookie';
 
-const CoursePage = () => {
+const CoursesPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -65,4 +65,4 @@ const CoursePage = () => {
   return null; // Fallback if the role is undefined or not matched
 };
 
-export default CoursePage;
+export default CoursesPage;

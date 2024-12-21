@@ -23,7 +23,6 @@ export async function PUT(req: Request){
         body.numberOfQuestions = Number(body.numberOfQuestions);
         body.passingGrade = Number(body.passingGrade);
 
-        console.log(body)
 
         const response = await axios.put(
             `http://localhost:3001/api/v1/instructor/courses/${courseId}/modules/${moduleId}`, body,
