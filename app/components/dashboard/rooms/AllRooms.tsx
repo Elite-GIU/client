@@ -3,7 +3,9 @@ import Cookies from 'js-cookie';
 import io, { Socket } from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
 import { FaReply } from "react-icons/fa";
-import { formatDistanceToNow, parseISO, isValid } from 'date-fns';
+import { formatDistanceToNow, parseISO, isValid, set } from 'date-fns';
+import NotificationsPopup from '../../NotificationsPopup';
+import StudentGroupPopup from './StudentGroupPopup';
 interface Room {
     _id: string;
     title: string;
@@ -43,6 +45,41 @@ const AllRooms: React.FC<AllRoomsProps> = ({ courseId }) => {
     const [error, setError] = useState<string | null>(null);
     const [myId, setMyId] = useState<string | null>(null);
     const messagesContainerRef = useRef<HTMLDivElement | null>(null);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [students, setStudents] = useState<any[]>([]);
+    const students_list = [
+        { user_id: "1", name: "Jackson Brady" },
+        { user_id: "2", name: "Alice Johnson" },
+        { user_id: "3", name: "Liam Smith" },
+        { user_id: "4", name: "Sophia Brown" },
+      ];
+    
+    useEffect( () => {
+        const fetchStudents = async () => {
+            setLoading(true);
+            try {
+                const token = Cookies.get('Token');
+                const response = await fetch(`/api/dashboard/courses/${courseId}/members`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch rooms');
+                }
+                const data = await response.json();
+                setStudents(data);
+            } catch (err) {
+                setError((err as Error).message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStudents();   
+        
+    }
+    , []);
 
     useEffect(() => {
         const token = Cookies.get('Token');
@@ -163,7 +200,6 @@ const AllRooms: React.FC<AllRoomsProps> = ({ courseId }) => {
             }
     
             const message = await response.json();
-            console.log('Message sent:', message);
             socket.emit('sendMessage', message);
             setNewMessage('');
             setSelectedReply(null); // Optionally clear the reply after sending
@@ -178,7 +214,6 @@ const AllRooms: React.FC<AllRoomsProps> = ({ courseId }) => {
         }
     };
     const formatDate = (date: string) => {
-        console.log(date);
         const dateObj = parseISO(date);
         if (!isValid(dateObj)) {
             console.error("Invalid date provided:", date);
@@ -187,16 +222,59 @@ const AllRooms: React.FC<AllRoomsProps> = ({ courseId }) => {
         return formatDistanceToNow(dateObj, { addSuffix: true });
     };
 
+    const createRoom = async (roomTitle: string, description: string, members_list: string[]) => {
+        if (!roomTitle) return;
+
+        try {
+            const token = Cookies.get('Token');
+            const response = await fetch(`/api/dashboard/courses/${courseId}/rooms`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    title: roomTitle,
+                    members_list: members_list,
+                    description: description,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create room');
+            }
+
+            const newRoom: Room = await response.json();
+            setRooms((prevRooms) => [newRoom, ...prevRooms]);
+        } catch (err) {
+            console.error('Failed to create room:', err);
+        }
+    };
+
+      
     return (
         <div className="text-black flex h-screen bg-gray-100" style={{height: 'calc(100vh - 6rem)'}}>
             {loading && <p>Loading...</p>}
             {error && <p>Error: {error}</p>}
             <div className="w-1/3 h-full overflow-y-auto bg-white shadow-sm rounded-lg">
-                <h1 className="text-xl font-bold text-center p-5 border-b border-gray-300">Rooms</h1>
+            <div className="flex items-center justify-between p-5 border-b border-gray-300">
+            <h1 className="text-xl font-bold">Rooms</h1>
+            <button
+            onClick={()=>setIsPopupOpen(true)}
+            className="px-4 py-2 bg-cyan-600 text-white rounded-lg shadow-md hover:bg-cyan-800 transition duration-300">
+                +
+            </button>
+            <StudentGroupPopup
+                isOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                students={students}
+                onCreateGroup={createRoom}
+            />
+            </div>
                 <ul className="divide-y divide-gray-300">
                     {rooms.map((room) => (
                         <li
-                            key={room._id}
+                            key={room._id+room.title}
                             className={`p-4 cursor-pointer hover:bg-gray-100 ${
                                 selectedRoomId === room._id ? 'bg-gray-200' : 'bg-white'
                             }`}

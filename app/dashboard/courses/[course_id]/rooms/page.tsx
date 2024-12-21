@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import { Params } from 'next/dist/server/request/params';
 import StudentCourse from '@/app/components/dashboard/student/StudentCourse';
 import AllRooms from '../../../../components/dashboard/rooms/AllRooms';
+import Loading from '../threads/loading';
 
 const RoomsPage = (context : { params: Promise<Params>}) => {
     const [courseId, setCourseId] = useState<any>("");
@@ -20,7 +21,7 @@ const RoomsPage = (context : { params: Promise<Params>}) => {
     
 
     if (!courseId || typeof courseId !== 'string') {
-        return <p>Loading...</p>; 
+        return <Loading />; 
     }
 
     return (

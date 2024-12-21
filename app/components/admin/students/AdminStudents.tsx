@@ -60,7 +60,6 @@ const AdminStudentsComponent = () => {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(response.statusText)
       if (!response.ok) {
         throw new Error("Failed to delete the student.");
       }

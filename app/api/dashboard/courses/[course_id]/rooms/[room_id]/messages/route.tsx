@@ -33,7 +33,7 @@ export async function GET(req: Request, context: { params: Params }) {
     if (response.status === 200) {
       return NextResponse.json(response.data.data)
     }    
-    return NextResponse.json({ error: 'Failed to fetch threads' }, { status: response.status })
+    return NextResponse.json({ error: 'Failed to fetch rooms' }, { status: response.status })
     
   }
   catch (error) {
