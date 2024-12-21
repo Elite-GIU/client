@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import React, { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { BiSolidCommentDots } from "react-icons/bi";
 import { FiEdit, FiTrash2, FiSave } from "react-icons/fi";
-import ThreadRole from './ThreadRole'; // Import the new component
-import { usePathname } from 'next/navigation';
+import ThreadRole from "./ThreadRole"; // Import the new component
+import { usePathname } from "next/navigation";
 
 interface ThreadCardProps {
   thread: {
@@ -19,9 +19,15 @@ interface ThreadCardProps {
   };
   onUpdate?: (updatedTitle: string, updatedDescription: string) => void; // Optional function to handle update
   onDelete?: () => void; // Optional function to handle delete
+  role: string;
 }
 
-const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) => {
+const ThreadCard: React.FC<ThreadCardProps> = ({
+  thread,
+  onUpdate,
+  onDelete,
+  role,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
   const [description, setDescription] = useState(thread.description);
@@ -34,7 +40,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) =
     setIsEditing(false);
   };
 
-  const isThreadsPage = pathname.endsWith('/threads');
+  const isThreadsPage = pathname.endsWith("/threads");
 
   return (
     <div className="bg-white rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
@@ -67,12 +73,11 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) =
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           className="border rounded-md p-2 w-full text-gray-800 mt-2"
-          rows={3}
-        ></textarea>
+          rows={3}></textarea>
       ) : (
         <p className="mt-2 text-lg text-gray-900">
           {thread.description.length > 150
-            ? thread.description.substring(0, 150) + '...'
+            ? thread.description.substring(0, 150) + "..."
             : thread.description}
         </p>
       )}
@@ -84,42 +89,44 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) =
       <div className="flex justify-between items-center">
         <div className="flex items-center text-black hover:underline cursor-pointer">
           <BiSolidCommentDots className="text-xl text-gray-600 mr-2" />
-          <p>{thread.messagesCount} {thread.messagesCount === 1 ? 'reply' : 'replies'}</p>
+          <p>
+            {thread.messagesCount}{" "}
+            {thread.messagesCount === 1 ? "reply" : "replies"}
+          </p>
         </div>
 
         {/* Update and Delete Buttons (Visible only for thread master and not on threads page) */}
-        {thread.creator_id.role === 'thread master' && !isThreadsPage && (onUpdate || onDelete) && (
-          <div className="flex gap-3">
-            {onUpdate && (
-              isEditing ? (
+        {(thread.creator_id.role === "thread master" ||
+          role === "instructor") &&
+          !isThreadsPage &&
+          (onUpdate || onDelete) && (
+            <div className="flex gap-3">
+              {onUpdate && thread.creator_id.role === "thread master" && (
+                (isEditing ? (
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">
+                    <FiSave className="text-lg" />
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300">
+                    <FiEdit className="text-lg" />
+                    Update
+                  </button>
+                )))}
+              {onDelete && (
                 <button
-                  onClick={handleSave}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300"
-                >
-                  <FiSave className="text-lg" />
-                  Save
+                  onClick={onDelete}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300">
+                  <FiTrash2 className="text-lg" />
+                  Delete
                 </button>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-300"
-                >
-                  <FiEdit className="text-lg" />
-                  Update
-                </button>
-              )
-            )}
-            {onDelete && (
-              <button
-                onClick={onDelete}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300"
-              >
-                <FiTrash2 className="text-lg" />
-                Delete
-              </button>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
       </div>
     </div>
   );
