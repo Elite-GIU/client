@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import InstructorCourse from '../../../components/dashboard/instructor/InstructorCourse'
 import Cookies from 'js-cookie';
 import { Params } from 'next/dist/server/request/params';
+import StudentCourse from '@/app/components/dashboard/student/StudentCourse';
 
 const CoursePage =  (context : { params: Promise<Params>}) => {
   const [role, setRole] = useState<string | null>(null);
@@ -57,9 +58,12 @@ const CoursePage =  (context : { params: Promise<Params>}) => {
 
   if (role === 'student') {
     return (
-      <h1>
-        Unauthorized
-      </h1>
+      <div>
+        {courseId ? 
+        <StudentCourse id = {courseId}/> :
+        'loading'
+        }
+      </div>
     );
   }
 
