@@ -147,6 +147,7 @@ const InstructorCourse =  (props: any) => {
         setUpdateData({...updateData, numberOfQuestions: nrOfQuestions, passingGrade, assessmentType, moduleId: _id});
     }
 
+    console.log(course);
     return (
         <>
         {course.length === 0 ? (
