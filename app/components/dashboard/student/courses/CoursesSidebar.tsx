@@ -120,7 +120,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   };
 
   return (
-    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
+    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
       <ul className="p-0 m-0">
         <li
           className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"

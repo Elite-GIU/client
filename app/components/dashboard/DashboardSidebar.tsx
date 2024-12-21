@@ -19,7 +19,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ items, isOpen, setIsOpen}) =
   const isSelected = (href: string) => pathname === href;
 
   return (
-    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0 fixed h-full w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
+    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed h-full w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
       <ul className="p-0 m-0">
         {items.map((item, index) => (
           <li key={index}
