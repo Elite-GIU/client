@@ -103,7 +103,10 @@ const MyCoursesComponentInstructor =  () => {
               window.location.reload();
 
           }else {
-              alert('Error submitting Form! Please try again')
+            
+            const reason = await response.json();
+
+            alert('Error submitting Form! : ' + reason.error.message)
           }
         }catch(error){
 
