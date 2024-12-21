@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { set } from 'date-fns';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -33,7 +34,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [expandedModules, setExpandedModules] = useState<{ [key: string]: boolean }>({});
   const [isModulesExpanded, setIsModulesExpanded] = useState(false);
-
+  const [role , setRole] = useState<string | null>(null);
   useEffect(() => {
     async function fetchModules() {
       const token = Cookies.get('Token');
@@ -44,7 +45,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
       const decodedToken: { role: string } = jwtDecode(token);
       const role = decodedToken.role;
-
+      setRole(role);
       const response = await fetch(`/api/dashboard/${role}/course/${courseId}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -157,12 +158,21 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                         {content.title}
                       </li>
                     ))}
-                    <li
-                      className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
-                      onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/quiz`)}
-                    >
-                      Quiz
-                    </li>
+                    {role === 'instructor' ? (
+                      <li
+                        className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
+                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/question-bank`)}
+                      >
+                        Question Bank
+                      </li>
+                    ) : (
+                      <li
+                        className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
+                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/quiz`)}
+                      >
+                        Quiz
+                      </li>
+                    )}
                   </ul>
                 )}
               </React.Fragment>
