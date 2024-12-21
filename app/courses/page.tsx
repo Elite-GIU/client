@@ -46,8 +46,6 @@ const CoursesPage = () => {
     const fetchCourses = async () => {
         try {
             // const query = `page=${currentPage}&${searchBy}=${searchTerm}`;
-            console.log(searchTerm);
-            console.log(searchTerm.length);
             const query = `page=${currentPage}${searchTerm === "" ? "" : '&'+searchBy+'='+searchTerm }`;
             const response = await fetch(`/api/courses?${query}`, {
                 method: "GET",
