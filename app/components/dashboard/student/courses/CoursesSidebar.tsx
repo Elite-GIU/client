@@ -16,7 +16,7 @@ interface ModuleItem {
   name: string;
   href: string;
   contents?: ContentItem[];
-  isLocked?: boolean;  // Indicates if the module is locked
+  isLocked?: boolean;
 }
 
 interface ContentItem {
@@ -79,7 +79,6 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           };
         }
       
-        console.log(moduleData.module.content);
         return {
           id: module._id,
           name: module.title,
@@ -184,6 +183,12 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           onClick={() => handleNavigation(`/dashboard/courses/${courseId}/threads`)}
         >
           <span className="ml-6 text-black">Threads</span>
+        </li>
+        <li
+          className="flex items-center cursor-pointer hover:bg-gray-300 bg-gray-200 w-full p-6 pl-4"
+          onClick={() => handleNavigation(`/dashboard/courses/${courseId}/rooms`)}
+        >
+          <span className="ml-6 text-black">Rooms</span>
         </li>
 
       </ul>
