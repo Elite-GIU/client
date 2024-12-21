@@ -50,9 +50,7 @@ export async function GET(req: Request, context: { params: Params }) {
 export async function POST(req: Request, context: { params: Params }) {
   try {
     const { course_id } = await context.params
-    console.log(course_id)
     const { title, description } = await req.json()
-    console.log(title, description) 
     if (!course_id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 })
     }
@@ -72,7 +70,6 @@ export async function POST(req: Request, context: { params: Params }) {
         }
       }
     )
-    console.log(response)
 
     if (response.status === 201) {
       return NextResponse.json(response.data)

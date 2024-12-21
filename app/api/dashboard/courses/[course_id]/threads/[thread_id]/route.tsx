@@ -50,7 +50,6 @@ export async function PUT(req: Request, context: { params: Params }) {
     try {
         const { course_id, thread_id } = await context.params;
         const { title, description } = await req.json();
-        console.log(title, description);
         if (!course_id || !thread_id) {
             return NextResponse.json({ error: "Course ID and Thread ID are required" }, { status: 400 });
         }
@@ -107,7 +106,6 @@ export async function DELETE(req: Request, context: { params: Params }) {
                 },
             }
         );
-        console.log(response);
 
         if (response.status === 200) {
             return NextResponse.json({ message: "Thread deleted successfully" });
@@ -115,7 +113,6 @@ export async function DELETE(req: Request, context: { params: Params }) {
 
         return NextResponse.json({ error: "Failed to delete thread" }, { status: response.status });
     } catch (error) {
-        console.log(error);
         if (axios.isAxiosError(error) && error.response) {
             return NextResponse.json({ error: error.response.data.message || "Server error" }, { status: error.response.status });
         }

@@ -12,13 +12,8 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
         }
 
-        const token = req.headers.get('Authorization');
-        if (!token) {
-            return NextResponse.json({ error: 'Authorization token is required' }, { status: 401 });
-        }
-
         const response = await axios.get(`http://localhost:3001/api/v1/users/instructor-name/${userId}`, {
-            headers: { Authorization: token }
+            headers: {}
         });
 
         if (response.status === 200) {

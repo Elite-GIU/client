@@ -24,7 +24,7 @@ export async function GET(req: Request, context: { params: Params }) {
 
 
         const response = await axios.get(
-            `http://localhost:3001/api/v1/student/courses/${course_id}/modules/${module_id}`,
+            `http://localhost:3001/api/v1/instructor/courses/${course_id}/modules/${module_id}`,
             {
                 headers: {
                     Authorization: token,
@@ -32,20 +32,12 @@ export async function GET(req: Request, context: { params: Params }) {
                 },
             }
         );
-        
+
         if (response.status === 200) {
-            return NextResponse.json({module: response.data});
+            return NextResponse.json(response.data);
         }
-        
-        return NextResponse.json({ error: 'Failed to fetch course module' }, { status: response.status });
-        
+
     } catch (error) {
-        // if response status is 403, return a 403 status code
-        if (axios.isAxiosError(error) && error.response) {
-            return NextResponse.json(
-                { status: error.response.status }
-            );
-        }
         if (axios.isAxiosError(error) && error.response) {
             return NextResponse.json(
                 { error: error.response.data.message || 'Server error' },
