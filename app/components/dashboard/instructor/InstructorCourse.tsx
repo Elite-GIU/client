@@ -95,7 +95,9 @@ const InstructorCourse =  (props: any) => {
                 alert('Module added successfully! Refresh the page to see the result');
 
             }else {
-                alert('Error submitting Form! Please try again')
+                const reason = await response.json();
+
+                alert('Error submitting Form! : ' + reason.error.message)
             }
         }catch(error){
 
@@ -122,7 +124,10 @@ const InstructorCourse =  (props: any) => {
                 alert('Module updated successfully! Refresh the page to see the result');
 
             }else {
-                alert('Error submitting Form! Please try again')
+
+                const reason = await response.json();
+
+                alert('Error submitting Form! : ' + reason.error.message)
             }
         }catch(error){
 
