@@ -74,11 +74,7 @@ const StudentCourseContent: React.FC<{
   return (
     <div className="flex flex-col rounded-none">
       <div className="flex flex-col px-20 pt-10 pb-10 w-full bg-neutral-100 max-md:px-5 max-md:pb-24 max-md:max-w-full">
-        {" "}
-        {/* Adjusted pb from 44 to 10 */}
         <div className="flex flex-col px-16 pt-12 pb-12 w-full bg-white rounded-2xl shadow-[0px_1px_17px_rgba(0,0,0,0.25)] max-md:px-5 max-md:pb-24 max-md:max-w-full">
-          {" "}
-          {/* Adjusted pb from 96 to 0 */}
           <div className="mb-4">
             <CourseHeader
               title={content.title}
