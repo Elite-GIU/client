@@ -52,6 +52,7 @@ function ThreadDetailPage() {
   const [thread, setThread] = useState<ThreadDetail | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [role, setRole] = useState('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { course_id, thread_id } = useParams<{ course_id: string; thread_id: string }>();
@@ -102,6 +103,18 @@ function ThreadDetailPage() {
         );
 
         setMessages(messagesWithReplies);
+
+         // Fetch user role
+         const response = await fetch("/api/profile/role", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setRole(data.role);
+        } else {
+          router.push("/login");
+        }
       } catch (error) {
         console.error('API error:', error);
         setError('Failed to load data. Please try again later.');
@@ -209,8 +222,8 @@ function ThreadDetailPage() {
         );
       } else {
         setMessages((prevMessages) => [
-          ...prevMessages,
           { ...newMessage.data, replies: [] },
+          ...prevMessages,
         ]);
       }
     } catch (error) {
@@ -234,7 +247,7 @@ function ThreadDetailPage() {
   return (
     <div className="flex flex-col space-y-8">
       <div className="p-4">
-        {thread && <ThreadCard thread={thread} onDelete={deleteThread} onUpdate={updateThread}/>}
+        {thread && <ThreadCard thread={thread} onDelete={deleteThread} onUpdate={updateThread} role={role}/>}
       </div>
       <div className="p-4">
     
