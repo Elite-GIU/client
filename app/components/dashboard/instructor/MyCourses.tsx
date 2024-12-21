@@ -1,170 +1,157 @@
-'use client';
-import axios from 'axios';
-import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie'
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+import CourseCard from '../student/courses/CourseCardInstructor';
+
 
 interface Course {
+  _id: string;
+  title: string;
+  category: string;
+  difficulty_level: number;
+  image_path: string;
+  instructor_id: string;
+  instructor_name: string | null;
+  description: string;
+  keywords: string[];
+}
+
+const CoursePage: React.FC = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCourses = async () => {
+    try {
+      const token = Cookies.get('Token');
+      const response = await fetch(`/api/instructor/course`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch courses');
+
+      const jsoned = await response.json();
+      setCourses(jsoned);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateCourse = async (updatedCourse: {
     _id: string;
     title: string;
     category: string;
-    difficulty_level: number; 
+    difficulty_level: number;
     image_path: string;
-    instructor_id: string;
-    instructor_name: string | null;
     description: string;
-}
-
-const MyCoursesComponentInstructor =  () => {
-
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchCourses = async() => {
-
-        try {
-            
-            const token = Cookies.get('Token');
-            const response = await fetch(`/api/instructor/course`, {
-                method: 'GET',
-                headers: {Authorization: `Bearer ${token}`}
-            });
-
-            if(!response.ok)
-                throw new Error('Failed to fetch courses');
-
-            const jsoned = await response.json()
-
-            setCourses(jsoned);
-
-        }catch(error){
-            setError((error as Error).message);
-        }finally{
-            setIsLoading(false);
-        }
-    }  
-
-    useEffect(() => {
-        const effect = async () => {
-            await fetchCourses();
-        }
-        effect();
-    }, []);
-
-    if (isLoading) {
-        return <div className="text-black">Loading...</div>;
+    keywords: string[]; // Adding keywords
+  }) => {
+    const token = Cookies.get('Token');
+    try {
+      const response = await fetch(`/api/instructor/course/${updatedCourse._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedCourse),
+      });
+  
+      if (!response.ok) throw new Error('Failed to update course');
+  
+      // Update courses state with the updated course data
+      setCourses((prevCourses) =>
+        prevCourses.map((course) =>
+          course._id === updatedCourse._id ? { ...course, ...updatedCourse } : course
+        )
+      );
+    } catch (error) {
+      setError((error as Error).message);
     }
-    
-    if (error) {
-        return <div className="text-black">Error: {error}</div>;
-    }
-
-    const getDifficultyBadge = (level: number) => {
-        if (level === 1) {
-          return (
-            <span className="text-xs text-green-700 bg-green-100 py-1 px-2 rounded">
-              Easy
-            </span>
-          );
-        } else if (level === 2) {
-          return (
-            <span className="text-xs text-orange-700 bg-orange-100 py-1 px-2 rounded">
-              Intermediate
-            </span>
-          );
-        } else if (level === 3) {
-          return (
-            <span className="text-xs text-red-700 bg-red-100 py-1 px-2 rounded">
-              Hard
-            </span>
-          );
-        }
-        return null;
-    }
-
-    const handleDeletion = async (e: any, id: string) => {
+  };
+  /*
+  const handleDeletion = async (e: any, id: string) => {
         e.preventDefault();
-
         try {
-
           if(!window.confirm("are you sure you want to delete this course ?"))
             return;
-
           const token = Cookies.get('Token');
-          const response = await fetch(`/api/instructor/course/${id}/delete`, {
+          const response = await fetch(/api/instructor/course/${id}/delete, {
               method: 'DELETE',
-              headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
+              headers: {Authorization: Bearer ${token}, 'ContentType': 'application/json'},
           });
-
           if(response.ok){
-
               alert('Course Deleted successfully');
-
               window.location.reload();
-
           }else {
-            
             const reason = await response.json();
-
             alert('Error submitting Form! : ' + reason.error.message)
           }
-        }catch(error){
-
-          console.error("Error: ", error);
 
         }
-
     }
+   */
+  const deleteCourse = async (id: string) => {
+    const token = Cookies.get('Token');
+    console.log('The Token is :'+token);
+    if (!window.confirm("Are you sure you want to delete this course?")) {
+      return;
+    }
+    console.log('after the alert');
+    try {
+      const response = await fetch(`/api/instructor/course/${id}/delete`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('the resposnse'+response.text);
 
-    return (
-        <>
-        {courses.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm">
-              No courses found. Start learning by enrolling in a course!
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => (
-                <div
-                  key={course._id}
-                  className="border border-gray-200 rounded-lg shadow-md"
-                >
-                  <img
-                    src={course.image_path}
-                    alt={course.title}
-                    className="w-full h-40 object-cover rounded-t-lg"
-                  />
-                  <div className="p-4">
-                    {getDifficultyBadge(course.difficulty_level)}
-                    <h3 className="text-lg font-medium mt-2 text-black">
-                      {course.title}
-                    </h3>
-                    {/* Truncate description to two lines */}
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                      {course.description}
-                    </p>
-                    <div className="mt-4">
-                      <a
-                        href={`/dashboard/courses/${course._id}`}
-                        className="text-blue-600 text-sm font-medium hover:underline"
-                        style={{marginRight: "1rem"}}
-                      >
-                        Course Details
-                      </a>
-                      <a
-                        onClick={(e) => handleDeletion(e, course._id)}
-                        className="text-blue-600 text-sm font-medium hover:underline"
-                      >
-                        Delete Course
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
+      if (!response.ok) {
+        const reason = await response.json();
+        console.log('the reason '+reason);
+        throw new Error(reason.error?.message || 'Failed to delete course');
+      }
+  
+      setCourses((prevCourses) =>
+        prevCourses.filter((course) => course._id !== id)
       );
-}
+  
+      alert('Course deleted successfully');
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      setError((error as Error).message);
+      alert('Error deleting course: ' + (error as Error).message);
+    }
+  };
+  
 
-export default MyCoursesComponentInstructor;
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div className="p-4">
+      {courses.length > 0 ? (
+        courses.map((course) => (
+          <CourseCard
+            key={course._id}
+            course={course}
+            onUpdate={updateCourse}
+            onDelete={() => deleteCourse(course._id)}
+          />
+        ))
+      ) : (
+        <p>No courses available</p>
+      )}
+    </div>
+  );
+};
+
+export default CoursePage;

@@ -8,7 +8,7 @@ import { Params } from 'next/dist/server/request/params';
 export async function DELETE(req: Request, context: { params: Promise<Params>}) {
     try {
         // Await the `params` object
-
+        console.log('before id')
         const {id} = await context.params;
 
         if (!id) {
