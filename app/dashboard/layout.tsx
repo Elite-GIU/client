@@ -19,6 +19,7 @@ const studentSidebarItems = [
 const instructorSidebarItems = [
   { name: 'Dashboard', icon: <FaHome />, href: "/dashboard" },
   { name: 'Analytics', icon: <FaBook />, href: "/dashboard/analytics" },
+  { name: 'My Courses', icon: <FaBook />, href: "/dashboard/courses" },
   { name: 'Profile', icon: <FaUserAlt />, href: "/dashboard/profile" }
 ];
 

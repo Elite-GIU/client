@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
+import MyCoursesComponentInstructor from '../../components/dashboard/instructor/MyCourses'
 import Cookies from 'js-cookie';
 
 const CoursesPage = () => {
@@ -56,8 +57,7 @@ const CoursesPage = () => {
   if (role === 'instructor') {
     return (
       <div>
-        <h1 className="text-3xl font-semibold mb-6">Instructor Dashboard</h1>
-        <div>TODO: Implement instructor courses functionality</div>
+        <MyCoursesComponentInstructor/>
       </div>
     );
   }

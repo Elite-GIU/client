@@ -30,13 +30,18 @@ export async function GET(req: Request, context: { params: Params }) {
         );
 
         if (response.status === 200) {
-            return NextResponse.json(response.data);
+            return NextResponse.json( response.data);
         }   
 
-        return NextResponse.json({ error: 'Failed to fetch course modules' }, { status: response.status });
+        
         
     } catch (error) {
+        if (axios.isAxiosError(error) && error.response && error.response.status === 403) {
+            console.log('error', error.response.data);
+            return NextResponse.json({ status: 403 });
+        }
         if (axios.isAxiosError(error) && error.response) {
+            console.log('error', error.response.data);
             return NextResponse.json(
                 { error: error.response.data.message || 'Server error' },
                 { status: error.response.status }
