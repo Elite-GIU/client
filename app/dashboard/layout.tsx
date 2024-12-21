@@ -75,7 +75,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         {isCoursePage
           ? <CourseSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
           : <DashboardSidebar items={role === 'instructor' ? instructorSidebarItems : studentSidebarItems} isOpen={isOpen} setIsOpen={setIsOpen} />}
-        <main className={`${isCoursePage ? "sm:ml-96" : "sm:ml-64"} flex-1 p-4 overflow-auto`}>
+        <main className={`${isCoursePage ? "md:ml-96" : "md:ml-64"} flex-1 p-4 overflow-auto`}>
           {children}
         </main>
       </div>
