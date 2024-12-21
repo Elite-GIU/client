@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { User, BookOpen, Calendar } from 'lucide-react';
-import Cookies from 'js-cookie';
-import Image from "next/image"
+import React, { useEffect, useState } from "react";
+import { User, BookOpen, Calendar } from "lucide-react";
+import Cookies from "js-cookie";
+import Image from "next/image";
 
 interface Course {
   _id: string;
@@ -15,21 +15,21 @@ interface Course {
   created_at: string;
 }
 interface Instructor {
-    _id: string;
-    name: string;
-  }
-  
+  _id: string;
+  name: string;
+}
+
 const StudentCourse = ({ id }: { id: string }) => {
   const [course, setCourse] = useState<Course>({
-    _id: '',
-    title: '',
-    category: '',
+    _id: "",
+    title: "",
+    category: "",
     difficulty_level: 0,
-    image_path: '',
-    instructor_id: '',
-    instructor_name: '',
-    description: '',
-    created_at: '',
+    image_path: "",
+    instructor_id: "",
+    instructor_name: "",
+    description: "",
+    created_at: "",
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,17 +41,21 @@ const StudentCourse = ({ id }: { id: string }) => {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch course.");
       }
-  
+
       const data = await response.json();
       console.log(data);
-  
+
       // Extract the course from the fetched data
       if (data && data.course) {
         setCourse(data.course);
+        const instructor_name = await fetchInstructorName(
+          data.course.instructor_id
+        );
+        setCourse((prevCourse) => ({ ...prevCourse, instructor_name }));
       } else {
         throw new Error("Course data is not available.");
       }
@@ -62,6 +66,31 @@ const StudentCourse = ({ id }: { id: string }) => {
     }
   };
 
+  const fetchInstructorName = async (
+    instructorId: string
+  ): Promise<string | null> => {
+    try {
+      const token = Cookies.get("Token");
+      const response = await fetch(
+        `/api/dashboard/student/get-instructor-name?userId=${instructorId}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch instructor name.");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.error("Error fetching instructor name:", err);
+      return "Unknown Instructor"; // Fallback
+    }
+  };
+
   useEffect(() => {
     fetchCourse();
   }, [id]);
@@ -69,7 +98,9 @@ const StudentCourse = ({ id }: { id: string }) => {
   if (isLoading) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
-        <div className="animate-pulse text-gray-600">Loading course details...</div>
+        <div className="animate-pulse text-gray-600">
+          Loading course details...
+        </div>
       </div>
     );
   }
@@ -115,35 +146,35 @@ const StudentCourse = ({ id }: { id: string }) => {
   };
 
   return (
-            <div
-              key={course._id}
-              className="border border-gray-200 rounded-lg shadow-md">
-              <img
-                src={course.image_path}
-                alt={course.title}
-                className="w-full h-40 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                {getDifficultyBadge(course.difficulty_level)}
-                <p className="text-lg font-medium mt-2 text-black">
-                  {course.title}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {course.instructor_name || "Unknown Instructor"}
-                </p>
-                {/* Truncate description to two lines */}
-                <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                  {course.description}
-                </p>
-                <div className="mt-4">
-                  <a
-                    href={`/dashboard/courses/${course._id}`} //update to be the module
-                    className="text-blue-600 text-sm font-medium hover:underline">
-                    Continue Learning ...
-                  </a>
-                </div>
-              </div>
-            </div>
+    <div
+      key={course._id}
+      className="border border-gray-200 rounded-lg shadow-md"
+    >
+      <img
+        src={course.image_path}
+        alt={course.title}
+        className="w-full h-40 object-cover rounded-t-lg"
+      />
+      <div className="p-4">
+        {getDifficultyBadge(course.difficulty_level)}
+        <p className="text-lg font-medium mt-2 text-black">{course.title}</p>
+        <p className="text-sm text-gray-500 mt-1">
+          {course.instructor_name || "Unknown Instructor"}
+        </p>
+        {/* Truncate description to two lines */}
+        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+          {course.description}
+        </p>
+        <div className="mt-4">
+          <a
+            href={`/dashboard/courses/${course._id}`} //update to be the module
+            className="text-blue-600 text-sm font-medium hover:underline"
+          >
+            Continue Learning ...
+          </a>
+        </div>
+      </div>
+    </div>
   );
 };
 
