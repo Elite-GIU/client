@@ -53,18 +53,17 @@ export const StarRating: React.FC<{ course_id: string; module_id: string }> = ({
       setMessage("Failed to submit rating. Please try again.");
     }
   };
-
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <div className="flex space-x-2">
         {Array.from({ length: 5 }).map((_, index) => (
           <span
             key={index}
-            className={`cursor-pointer text-2xl ${
+            className={`cursor-pointer text-2xl transition-transform duration-300 ${
               isDisabled
-                ? "cursor-not-allowed"
+                ? "cursor-not-allowed text-gray-300"
                 : hoverIndex !== null && index <= hoverIndex
-                ? "text-yellow-400"
+                ? "text-yellow-400 scale-110"
                 : selectedIndex !== null && index <= selectedIndex
                 ? "text-yellow-400"
                 : "text-gray-400"
@@ -77,17 +76,11 @@ export const StarRating: React.FC<{ course_id: string; module_id: string }> = ({
           </span>
         ))}
       </div>
-      {message && (
-        <div
-          className={`absolute -top-6 -left-2 text-gray-600 text-sm opacity-0 transition-opacity duration-300 whitespace-nowrap ${
-            hoverIndex !== null || message === "Thank you for your rating!"
-              ? "opacity-100"
-              : "opacity-0"
-          }`}
-        >
-          {message}
-        </div>
-      )}
+      {/* Fixed Height Container for Message */}
+      <div className="h-6 flex items-center justify-center text-gray-600 text-sm">
+        {message}
+      </div>
     </div>
   );
-};
+  
+}
