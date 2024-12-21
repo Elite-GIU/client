@@ -4,11 +4,10 @@ import { useEffect, useState } from "react";
 
 const RenderContent: React.FC<{
   content: string;
-  type: string;
   course_id: string;
   module_id: string;
   content_id: string;
-}> = ({ content, type, course_id, module_id, content_id }) => {
+}> = ({ content, course_id, module_id, content_id }) => {
   const [filePath, setFilePath] = useState<string | null>(null);
 
   const fetchFile = async () => {
@@ -20,20 +19,19 @@ const RenderContent: React.FC<{
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          responseType: "blob", // Important for handling binary data
+          responseType: "blob",
         }
       );
 
-      // Create a URL for the Blob
       const fileURL = URL.createObjectURL(response.data);
-      setFilePath(fileURL); // Set the file URL in state
+      setFilePath(fileURL);
     } catch (error) {
       setFilePath(null);
     }
   };
 
   useEffect(() => {
-    fetchFile(); // Call fetchFile when component mounts
+    fetchFile();
   }, [course_id, module_id, content_id]);
 
   if (!content) {
@@ -46,22 +44,43 @@ const RenderContent: React.FC<{
     );
   }
 
-  if (type === "document" && filePath) {
-    return (
-      <div className=" items-center h-64">
-        <iframe
-          src={filePath}
-          width="100%"
-          height="600px"
-          title="PDF Viewer"
-          style={{ border: "none" }}
-          className="w-full border-none mt-4"
-        ></iframe>
-      </div>
-    );
+  const fileExtension = content.split(".").pop()?.toLowerCase();
+
+  if (filePath) {
+    switch (fileExtension) {
+      case "pdf":
+      case "doc":
+      case "docx":
+      case "ppt":
+      case "pptx":
+        return (
+          <div className="flex justify-center items-center overflow-hidden h-full">
+            <iframe
+              src={filePath}
+              title="Document Viewer"
+              className="w-full h-full border-none rounded-lg"
+            ></iframe>
+          </div>
+        );
+      case "mp4":
+      case "mov":
+      case "avi":
+        return (
+          <div className="flex justify-center items-center overflow-hidden h-full">
+            <video
+              src={filePath}
+              controls
+              className="w-auto h-full border-none rounded-lg"
+              style={{ objectFit: "contain", display: "block" }}
+            />
+          </div>
+        );
+      default:
+        return <div className="text-black">Error: Unsupported file type</div>;
+    }
   }
 
-  return <div className="text-black">Error: Unsupported content type</div>;
+  return <div className="text-black">Error: File not found</div>;
 };
 
 export default RenderContent;

@@ -35,14 +35,16 @@ export async function GET(req: Request, context: { params: Params }) {
         headers: {
           Authorization: token,
         },
-        responseType: "arraybuffer", // Important for binary data
+        responseType: "arraybuffer",
       }
     );
 
     if (response.status === 200) {
+      const contentType =
+        response.headers["content-type"] || "application/octet-stream";
       return new NextResponse(response.data, {
         headers: {
-          "Content-Type": "application/pdf",
+          "Content-Type": contentType,
           "Content-Disposition": 'inline; filename="document.pdf"',
         },
       });
