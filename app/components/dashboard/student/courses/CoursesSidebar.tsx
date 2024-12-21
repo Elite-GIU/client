@@ -161,7 +161,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     {role === 'instructor' ? (
                       <li
                         className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
-                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/question-bank`)}
+                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/questionbank`)}
                       >
                         Question Bank
                       </li>
