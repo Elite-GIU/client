@@ -75,7 +75,7 @@ export async function POST(req: Request, context: { params: Params }) {
       return NextResponse.json(response.data)
     }
 
-    return NextResponse.json({ error: 'Failed to create course' }, { status: response.status })
+    return NextResponse.json({ error: 'Failed to create thread' }, { status: response.status })
   }
   catch (error) {
     if (axios.isAxiosError(error) && error.response) {
