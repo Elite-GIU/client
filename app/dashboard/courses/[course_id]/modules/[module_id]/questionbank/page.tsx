@@ -93,6 +93,70 @@ export default function ModulePage() {
         });
     };
 
+    const handleCreate = async () => {
+        const token = Cookies.get('Token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/dashboard/courses/${courseId}/modules/${moduleId}/questionbank`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newQuestion)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to create question');
+            }
+
+            // Reset form and fetch updated questions
+            handleCancel();
+            fetchQuestions();
+        } catch (error) {
+            console.error('Error creating question:', error);
+        }
+    };
+
+    const handleEdit = async () => {
+        const token = Cookies.get('Token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `/api/dashboard/courses/${courseId}/modules/${moduleId}/questionbank/${editingQuestionId}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newQuestion)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to update question');
+            }
+
+            // Reset form and fetch updated questions
+            handleCancel();
+            fetchQuestions();
+        } catch (error) {
+            console.error('Error updating question:', error);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
@@ -107,62 +171,14 @@ export default function ModulePage() {
             return;
         }
 
-        const token = Cookies.get('Token');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
-
-        try {
-            const method = editingQuestionId ? 'PUT' : 'POST';
-            const url = editingQuestionId
-                ? `/api/dashboard/courses/${courseId}/modules/${moduleId}/questionbank/${editingQuestionId}`
-                : `/api/dashboard/courses/${courseId}/modules/${moduleId}/questionbank`;
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(newQuestion)
-            });
-
-            let errorData;
-            try {
-                const data = await response.json();
-                if (!response.ok) {
-                    errorData = data;
-                    throw new Error(typeof data.message === 'string' ? data.message : `Failed to ${editingQuestionId ? 'update' : 'create'} question`);
-                }
-
-                // Reset form and fetch updated questions
-                setNewQuestion({
-                    question: '',
-                    choices: ['', ''],
-                    right_choice: '',
-                    difficulty: 1,
-                    type: 'mcq'
-                });
-                setFormError(null);
-                setShowForm(false);
-                setEditingQuestionId(null);
-                fetchQuestions();
-            } catch (parseError) {
-                console.error('Error parsing response:', parseError);
-                const error = parseError as Error;
-                const errorMessage = typeof errorData?.message === 'string' 
-                    ? errorData.message 
-                    : error.message || 'Failed to process server response';
-                setFormError(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error handling question:', error);
-            setFormError(error instanceof Error ? error.message : `Failed to ${editingQuestionId ? 'update' : 'create'} question. Please try again.`);
+        if (editingQuestionId) {
+            await handleEdit();
+        } else {
+            await handleCreate();
         }
     };
 
-    const handleEdit = (question: Question) => {
+    const prepareEdit = (question: Question) => {
         setNewQuestion({
             question: question.question,
             choices: question.choices,
@@ -189,6 +205,7 @@ export default function ModulePage() {
     };
 
     const handleDelete = async (questionId: string) => {
+        console.log('Deleting question with ID:', questionId);
         if (!window.confirm('Are you sure you want to delete this question?')) {
             return;
         }
@@ -212,14 +229,13 @@ export default function ModulePage() {
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(typeof data.message === 'string' ? data.message : 'Failed to delete question');
+                throw new Error(`Failed to delete question: ${response.statusText}`);
             }
 
             // Refresh the questions list
             fetchQuestions();
         } catch (error) {
             console.error('Error deleting question:', error);
-            setError(error instanceof Error ? error.message : 'Failed to delete question. Please try again.');
         }
     };
 
@@ -386,7 +402,7 @@ export default function ModulePage() {
                             {role === 'instructor' && (
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => handleEdit(question)}
+                                        onClick={() => prepareEdit(question)}
                                         className="text-blue-500 hover:text-blue-600"
                                     >
                                         Edit
