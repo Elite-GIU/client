@@ -19,9 +19,10 @@ interface ThreadCardProps {
   };
   onUpdate?: (updatedTitle: string, updatedDescription: string) => void; // Optional function to handle update
   onDelete?: () => void; // Optional function to handle delete
+  role: string,
 }
 
-const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) => {
+const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete, role }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
   const [description, setDescription] = useState(thread.description);
@@ -88,9 +89,10 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) =
         </div>
 
         {/* Update and Delete Buttons (Visible only for thread master and not on threads page) */}
-        {thread.creator_id.role === 'thread master' && !isThreadsPage && (onUpdate || onDelete) && (
+        {(thread.creator_id.role === 'thread master' || role === 'instructor' )
+        && !isThreadsPage && (onUpdate || onDelete) && (
           <div className="flex gap-3">
-            {onUpdate && (
+            {onUpdate && thread.creator_id.role === 'thread master' && ( (
               isEditing ? (
                 <button
                   onClick={handleSave}
@@ -108,7 +110,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete }) =
                   Update
                 </button>
               )
-            )}
+            ))}
             {onDelete && (
               <button
                 onClick={onDelete}

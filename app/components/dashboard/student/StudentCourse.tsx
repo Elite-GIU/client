@@ -47,7 +47,6 @@ const StudentCourse = ({ id }: { id: string }) => {
       }
   
       const data = await response.json();
-      console.log(data);
   
       // Extract the course from the fetched data
       if (data && data.course) {

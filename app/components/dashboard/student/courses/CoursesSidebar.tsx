@@ -16,7 +16,7 @@ interface ModuleItem {
   name: string;
   href: string;
   contents?: ContentItem[];
-  isLocked?: boolean;  // Indicates if the module is locked
+  isLocked?: boolean;
 }
 
 interface ContentItem {
@@ -79,7 +79,6 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           };
         }
       
-        console.log(moduleData.module.content);
         return {
           id: module._id,
           name: module.title,
@@ -121,7 +120,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   };
 
   return (
-    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
+    <div className={`${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}>
       <ul className="p-0 m-0">
         <li
           className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"
@@ -161,7 +160,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     {role === 'instructor' ? (
                       <li
                         className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
-                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/question-bank`)}
+                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/questionbank`)}
                       >
                         Question Bank
                       </li>
@@ -184,6 +183,12 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           onClick={() => handleNavigation(`/dashboard/courses/${courseId}/threads`)}
         >
           <span className="ml-6 text-black">Threads</span>
+        </li>
+        <li
+          className="flex items-center cursor-pointer hover:bg-gray-300 bg-gray-200 w-full p-6 pl-4"
+          onClick={() => handleNavigation(`/dashboard/courses/${courseId}/rooms`)}
+        >
+          <span className="ml-6 text-black">Rooms</span>
         </li>
 
       </ul>
