@@ -6,6 +6,7 @@ import { FaReply } from "react-icons/fa";
 import { formatDistanceToNow, parseISO, isValid, set } from 'date-fns';
 import NotificationsPopup from '../../NotificationsPopup';
 import StudentGroupPopup from './StudentGroupPopup';
+import Loading from '@/app/dashboard/courses/[course_id]/threads/loading';
 interface Room {
     _id: string;
     title: string;
@@ -251,10 +252,11 @@ const AllRooms: React.FC<AllRoomsProps> = ({ courseId }) => {
         }
     };
 
-      
+    if(loading){
+        return <Loading />
+    }  
     return (
         <div className="text-black flex h-screen bg-gray-100" style={{height: 'calc(100vh - 6rem)'}}>
-            {loading && <p>Loading...</p>}
             {error && <p>Error: {error}</p>}
             <div className="w-1/3 h-full overflow-y-auto bg-white shadow-sm rounded-lg">
             <div className="flex items-center justify-between p-5 border-b border-gray-300">
