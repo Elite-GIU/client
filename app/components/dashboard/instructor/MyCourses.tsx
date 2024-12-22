@@ -92,8 +92,6 @@ const CoursePage: React.FC = () => {
     keywords: string[]; // Adding keywords
   }) => {
     const token = Cookies.get('Token');
-    console.log('updatedCourse: '+updatedCourse.description);
-    console.log('updatedCourse json : ' + JSON.stringify(updatedCourse));
     try {
       const response = await fetch(`/api/instructor/course/${updatedCourse._id}`, {
         method: 'PUT',
@@ -103,7 +101,6 @@ const CoursePage: React.FC = () => {
         
         body: JSON.stringify(updatedCourse),
       });
-      console.log('response: ' + response);
       if (!response.ok) throw new Error('Failed to update course');
   
       setCourses((prevCourses) =>

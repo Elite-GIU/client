@@ -68,14 +68,12 @@ const deleteCourse = async (
   setError: Function
 ) => {
   const token = Cookies.get('Token');
-  console.log('The Token is:', token);
 
   const isConfirmed = await showConfirmationDialog(
     'Are you sure you want to delete this course?'
   );
 
   if (!isConfirmed) {
-    console.log('Course deletion canceled');
     return;
   }
 
@@ -88,14 +86,12 @@ const deleteCourse = async (
       },
     });
 
-    console.log('Response Status:', response.status);
 
     if (!response.ok) {
       const reason = response.headers.get('Content-Type')?.includes('application/json')
         ? await response.json()
         : { error: { message: 'Failed to delete course' } };
 
-      console.log('The reason:', reason);
       throw new Error(reason.error?.message || 'Failed to delete course');
     }
 
@@ -104,7 +100,6 @@ const deleteCourse = async (
       prevCourses.filter((course: any) => course._id !== id)
     );
 
-    console.log('Course deleted successfully');
   } catch (error) {
     console.error('Error deleting course:', error);
     setError((error as Error).message);
