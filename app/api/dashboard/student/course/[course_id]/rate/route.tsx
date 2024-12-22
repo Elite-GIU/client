@@ -25,7 +25,6 @@ export async function POST(request: Request, context: { params: Params }) {
       );
     }
     const body = await request.json();
-    console.log(body);
     let response;
     if (body.course_id){
      response = await axios.post(
@@ -63,7 +62,6 @@ export async function POST(request: Request, context: { params: Params }) {
     );
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-        console.log(error.cause)
       return NextResponse.json(
         { error: error.response.data.message || "Server error" },
         { status: error.response.status }

@@ -205,7 +205,6 @@ export default function ModulePage() {
     };
 
     const handleDelete = async (questionId: string) => {
-        console.log('Deleting question with ID:', questionId);
         if (!window.confirm('Are you sure you want to delete this question?')) {
             return;
         }

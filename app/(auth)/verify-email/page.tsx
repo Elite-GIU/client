@@ -29,14 +29,12 @@ const VerifyEmailPage = () => {
     }
 
     try {
-      console.log("Verifying email..." + email);
       const response = await fetch("/api/auth/verify-email", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
       });
 
-      console.log("hmmmmmmmmmmm" + response.status);
       if (response.status === 401) {
         setError("Incorrect or Invalid OTP");
         return;
@@ -47,7 +45,6 @@ const VerifyEmailPage = () => {
         setError(errorData.error || "OTP verification failed.");
         return;
       }
-      console.log("ressssss" + response.body);
       setSuccessMessage("Account verified successfully! You can now log in.");
       setIsVerified(true);
     } catch (err) {
@@ -67,7 +64,6 @@ const VerifyEmailPage = () => {
     }
 
     try {
-      console.log("Resending OTP..." + email);
       const response = await fetch("/api/auth/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

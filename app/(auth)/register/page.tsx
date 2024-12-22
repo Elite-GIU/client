@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 // Import Heroicons
 import { BookOpenIcon, UserIcon } from '@heroicons/react/24/outline';
 import { set } from 'date-fns';
+import { divider } from '@nextui-org/theme';
 
 const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
@@ -18,9 +19,11 @@ const RegisterPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isRegister, setIsRegister] = useState(true);
-  const [otp, setOtp] = useState("");
+  const [preferrences, setPreferrences] = useState(false);
+  const [preferenceList, setPreferenceList] = useState<string[]>([]);
   const router = useRouter();
+
+
 
   const handleSignUp = async () => {
     setError('');
@@ -37,7 +40,6 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
-      console.log('Registering user...');
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,6 +48,7 @@ const RegisterPage: React.FC = () => {
           email,
           password,
           role: selectedRole,
+          preferenceList
         }),
       });
 
@@ -74,7 +77,7 @@ const RegisterPage: React.FC = () => {
       <div className="mb-8 sm:mb-12">
         <TutorFlowLogo size="text-4xl sm:text-5xl" />
       </div>
-      {
+      {!preferrences ?(
         <FormCard title="Create a new Account">
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
@@ -130,7 +133,7 @@ const RegisterPage: React.FC = () => {
             </div>
           </div>
           <div className="flex justify-center mb-4">
-            <AuthButton label="Sign Up" onClick={handleSignUp} />
+            <AuthButton label="Sign Up" onClick={() => setPreferrences(true)} />
           </div>
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
@@ -146,6 +149,22 @@ const RegisterPage: React.FC = () => {
             </a>
           </p>
         </FormCard>
+      ):
+    (
+      <div>
+        <FormCard title="Select your preferences">
+          <InputField
+            label="Select your preferences"
+            type="text"
+            placeholder="Enter your preferences"
+            onChange={(e) => setPreferenceList([...preferenceList, e.target.value])}
+          />
+          <div className="flex justify-center mb-4">
+            <AuthButton label="Confirm Preferences" onClick={handleSignUp} />
+          </div>
+          </FormCard>
+      </div>
+    )
      }
     </div>
   );

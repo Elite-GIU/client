@@ -142,9 +142,7 @@ const StudentCourseContent: React.FC<{
         fetchContent();
         setErrorMessage(null);
       } else {
-        console.log(response);
         const errorData = await response.json();
-        console.log("Error message:", errorData);
         setErrorMessage(errorData.error || "Failed to update content.");
       }
     } catch (error) {

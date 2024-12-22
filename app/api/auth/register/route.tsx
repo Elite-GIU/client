@@ -5,15 +5,14 @@ import axios from 'axios';
 
 export async function POST(req: Request) {
     try {
-        console.log('reqss: ', req);
-        const { fullName, email, password, role } = await req.json();
+        const { fullName, email, password, role, preferenceList } = await req.json();
         
         const response = await axios.post('http://localhost:3001/api/v1/auth/register', {
             name: fullName,
             email,
             password,
             role,
-            preferences: [], // hard coded for now
+            preferences: preferenceList, // hard coded for now
         });
 
         if (response.status === 201) {
