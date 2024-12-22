@@ -70,7 +70,7 @@ export async function POST(req: Request) {
 
       // Adjust fields if necessary (e.g., parsing difficulty_level as a number)
       body.difficulty_level = Number(body.difficulty_level);
-
+      delete body._id;
       const response = await axios.post(
           "http://localhost:3001/api/v1/instructor/courses",
           body,
@@ -137,7 +137,7 @@ export async function PUT(req: Request, context: { params: Params }) {
 
       // Adjust fields if necessary (e.g., parsing difficulty_level as a number)
       body.difficulty_level = Number(body.difficulty_level);
-
+      delete body._id;
       const response = await axios.put(
           `http://localhost:3001/api/v1/instructor/courses/${id}`,
           body,

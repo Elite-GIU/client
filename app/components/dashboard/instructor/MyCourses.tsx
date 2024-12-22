@@ -51,7 +51,7 @@ const CoursePage: React.FC = () => {
     console.log('updatedCourse: '+updatedCourse.description);
     console.log('updatedCourse json : ' + JSON.stringify(updatedCourse));
     try {
-      const response = await fetch(`/api/instructor/course/${updatedCourse._id}/delete`, {
+      const response = await fetch(`/api/instructor/course/${updatedCourse._id}/update`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ const CoursePage: React.FC = () => {
     }
     console.log('after the alert');
     try {
-      const response = await fetch(`/api/instructor/course/${id}/delete`, {
+      const response = await fetch(`/api/instructor/course/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
