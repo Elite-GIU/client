@@ -16,6 +16,7 @@ const ProfilePage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [role, setRole] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -24,6 +25,7 @@ const ProfilePage: React.FC = () => {
             router.push('/login');
             return;
         }
+
         const fetchProfile = async () => {
             try {
                 const response = await fetch('/api/dashboard/profile', {
@@ -45,8 +47,28 @@ const ProfilePage: React.FC = () => {
             }
         };
 
+        const fetchRole = async () => {
+            try {
+                const response = await fetch('/api/profile/role', {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setRole(data.role);
+                } else {
+                    router.push('/login');
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+                router.push('/login');
+            }
+        };
+
         fetchProfile();
-    }, []);
+        fetchRole();
+    }, [router]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Profile) => {
         if (profile) {
@@ -101,6 +123,30 @@ const ProfilePage: React.FC = () => {
         } catch (error) {
             console.error('Error updating profile:', error);
             setError('Failed to update profile');
+        }
+    };
+
+    const handleDeleteProfile = async () => {
+        const token = Cookies.get('Token');
+        if (!token) return;
+
+        try {
+            const response = await fetch('/api/dashboard/profile', {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                Cookies.remove('Token');
+                router.push('/login');
+            } else {
+                setError('Failed to delete profile');
+            }
+        } catch (error) {
+            console.error('Error deleting profile:', error);
+            setError('Failed to delete profile');
         }
     };
 
@@ -193,6 +239,16 @@ const ProfilePage: React.FC = () => {
                     </button>
                     )}
                 </div>
+                {role === 'student' && (
+                    <div className="mt-5">
+                        <button
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            onClick={handleDeleteProfile}
+                        >
+                            Delete Profile
+                        </button>
+                    </div>
+                )}
                 </div>
             ) : (
                 <div className="text-center text-gray-500">No profile data available</div>

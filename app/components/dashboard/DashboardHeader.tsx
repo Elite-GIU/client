@@ -58,7 +58,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   return (
     <header className="bg-white shadow-md h-16 flex justify-between items-center px-6">
-      <button onClick={toggleSidebar} className="md:hidden">
+      <button onClick={toggleSidebar} className="lg:hidden">
         <svg
           className="h-8 w-8 text-gray-600"
           fill="none"
