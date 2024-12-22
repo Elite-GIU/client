@@ -30,12 +30,38 @@ const CoursePage: React.FC = () => {
       if (!response.ok) throw new Error('Failed to fetch courses');
 
       const jsoned = await response.json();
-      setCourses(jsoned);
+      const coursesWithInstructorNames = await Promise.all(
+        jsoned.map(async (course: Course) => {
+            const instructorName = await fetchInstructorName(course.instructor_id);
+            return { ...course, instructor_name: instructorName };
+        })
+    );
+      setCourses(coursesWithInstructorNames);
     } catch (error) {
       setError((error as Error).message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+    const fetchInstructorName = async (instructorId: string): Promise<string | null> => {
+      try {
+          const token = Cookies.get("Token");
+          const response = await fetch(`/api/dashboard/student/get-instructor-name?userId=${instructorId}`, {
+              method: "GET",
+              headers: { Authorization: `Bearer ${token}` },
+          });
+  
+          if (!response.ok) {
+              throw new Error("Failed to fetch instructor name.");
+          }
+  
+          const data = await response.json();
+          return "Instructor: " + data;
+      } catch (err) {
+          console.error("Error fetching instructor name:", err);
+          return "Unknown Instructor";
+      }
   };
 
   const updateCourse = async (updatedCourse: {
@@ -51,7 +77,7 @@ const CoursePage: React.FC = () => {
     console.log('updatedCourse: '+updatedCourse.description);
     console.log('updatedCourse json : ' + JSON.stringify(updatedCourse));
     try {
-      const response = await fetch(`/api/instructor/course/${updatedCourse._id}/delete`, {
+      const response = await fetch(`/api/instructor/course/${updatedCourse._id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
