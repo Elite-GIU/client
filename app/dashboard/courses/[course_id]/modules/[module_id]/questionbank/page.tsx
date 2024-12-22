@@ -37,7 +37,7 @@ export default function ModulePage() {
     // New question form state
     const [newQuestion, setNewQuestion] = useState<NewQuestion>({
         question: '',
-        choices: ['', ''],
+        choices: ['', '', '', ''],
         right_choice: '',
         difficulty: 1,
         type: 'mcq'
@@ -194,7 +194,7 @@ export default function ModulePage() {
     const handleCancel = () => {
         setNewQuestion({
             question: '',
-            choices: ['', ''],
+            choices: ['', '', '', ''],
             right_choice: '',
             difficulty: 1,
             type: 'mcq'

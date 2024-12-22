@@ -12,7 +12,7 @@ interface Params {
 export async function PUT(req: Request, context: { params: Params }) {
     try {
         const { course_id, module_id, question_id } = await context.params;
-        const { question, choices, right_choice, difficulty, type } = await req.json();
+        const body = await req.json();
         if (!course_id || !module_id || !question_id) {
             return NextResponse.json(
                 { message: 'Course ID, Module ID, and Question ID are required' },
@@ -27,7 +27,7 @@ export async function PUT(req: Request, context: { params: Params }) {
 
         const response = await axios.put(
             `http://localhost:3001/api/v1/question/${course_id}/modules/${module_id}/question/${question_id}`,
-            { question, choices, right_choice, difficulty, type },
+            body,
             {
                 headers: {
                     Authorization: token,
@@ -37,7 +37,7 @@ export async function PUT(req: Request, context: { params: Params }) {
         );
 
         if (response.status === 200) {
-            return NextResponse.json(response.data.data);
+            return NextResponse.json(response.data.updatedQuestion);
         }
 
         return NextResponse.json({ error: "Failed to update question" }, { status: response.status });
