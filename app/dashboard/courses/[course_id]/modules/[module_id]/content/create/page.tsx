@@ -129,7 +129,6 @@ const CreateContent = () => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log(responseData);
         const contentId = responseData.content._id;
         router.push(
           `/dashboard/courses/${course_id}/modules/${module_id}/content/${contentId}`
