@@ -11,7 +11,7 @@ interface ContentDetails {
   description: string;
   type: string;
   isVisible: boolean;
-  content: string; // This will hold the file URL
+  content: string;
   upload_date: Date;
   last_updated: Date;
 }
@@ -20,17 +20,19 @@ const StudentCourseContent: React.FC<{
   course_id: string;
   module_id: string;
   content_id: string;
-  role: string; // Added role prop
+  role: string;
 }> = ({ course_id, module_id, content_id, role }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState<string | null>(null);
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
   const [content, setContent] = useState<ContentDetails>({
     _id: "",
     title: "",
     description: "",
     type: "",
     isVisible: false,
-    content: "", // This will hold the file URL
+    content: "",
     upload_date: new Date(),
     last_updated: new Date(),
   });
@@ -38,6 +40,7 @@ const StudentCourseContent: React.FC<{
   const [title, setTitle] = useState(content.title);
   const [description, setDescription] = useState(content.description);
   const [file, setFile] = useState<File | null>(null);
+  const [isVisible, setIsVisible] = useState(content.isVisible);
 
   const fetchContent = async () => {
     const token = Cookies.get("Token");
@@ -60,9 +63,10 @@ const StudentCourseContent: React.FC<{
       setContent(data);
       setTitle(data.title);
       setDescription(data.description);
+      setIsVisible(data.isVisible);
     } catch (err) {
       console.error(err);
-      setError("Failed to fetch content.");
+      setErrorMessage("Failed to fetch content.");
     } finally {
       setIsLoading(false);
     }
@@ -72,31 +76,80 @@ const StudentCourseContent: React.FC<{
     fetchContent();
   }, []);
 
+  const validateInputs = () => {
+    let isValid = true;
+    setTitleError(null);
+    setDescriptionError(null);
+
+    if (title.trim().length <= 3) {
+      setTitleError("Title must contain more than 3 characters.");
+      isValid = false;
+    }
+
+    if (description.trim().length <= 10) {
+      setDescriptionError("Description contain more than 10 characters.");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
   const handleUpdate = async () => {
     const token = Cookies.get("Token");
+
+    if (!validateInputs()) {
+      return;
+    }
+
+    // Form data to send along with the file
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("isVisible", JSON.stringify(isVisible));
+
     if (file) {
+      const maxFileSize = 100 * 1024 * 1024;
+      const fileExtension = file.name.split(".").pop()?.toLowerCase();
+
+      if (fileExtension !== "pdf" && fileExtension !== "mp4") {
+        setErrorMessage("Invalid file type.");
+        return;
+      }
+
+      if (file.size > maxFileSize) {
+        setErrorMessage("File size exceeds the maximum limit of 100MB.");
+        return;
+      }
+
       formData.append("file", file);
+      formData.append("type", fileExtension === "pdf" ? "document" : "video");
     }
 
     try {
-      const response = await fetch(`/api/content/${content_id}`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+      const response = await fetch(
+        `/api/dashboard/instructor/course/${course_id}/module/${module_id}/content/${content_id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         setIsEditing(false);
         fetchContent();
+        setErrorMessage(null);
       } else {
-        // Handle error (e.g., show an error message)
-        console.error("Failed to update content.");
+        console.log(response);
+        const errorData = await response.json();
+        console.log("Error message:", errorData);
+        setErrorMessage(errorData.error || "Failed to update content.");
       }
     } catch (error) {
       console.error("Error updating content:", error);
+      setErrorMessage("An unexpected error occurred.");
     }
   };
 
@@ -105,14 +158,11 @@ const StudentCourseContent: React.FC<{
     setTitle(content.title);
     setDescription(content.description);
     setFile(null);
+    setIsVisible(content.isVisible);
   };
 
   if (isLoading) {
     return <div className="text-black">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-black">Error: {error}</div>;
   }
 
   return (
@@ -127,7 +177,9 @@ const StudentCourseContent: React.FC<{
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="border p-2"
+                    className={`border ${
+                      title ? "border-blue-500" : "border-gray-300"
+                    } rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                 ) : (
                   content.title
@@ -137,9 +189,24 @@ const StudentCourseContent: React.FC<{
               module_id={module_id}
               role={role}
               isEditing={isEditing}
+              isVisible={isVisible}
               setIsEditing={setIsEditing}
+              setIsVisible={setIsVisible}
             />
+            {titleError && <div className="text-red-500">{titleError}</div>}
           </div>
+          {role === "instructor" && isEditing && (
+            <div className="flex items-center mb-4">
+              <input
+                type="file"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="border border-gray-300 rounded-md p-2 mr-2 cursor-pointer hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              />
+              {errorMessage && (
+                <div className="text-red-500">{errorMessage}</div>
+              )}
+            </div>
+          )}
           <RenderContent
             content={content.content}
             course_id={course_id}
@@ -158,7 +225,9 @@ const StudentCourseContent: React.FC<{
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="border p-2"
+                  className={`border ${
+                    description ? "border-blue-500" : "border-gray-300"
+                  } rounded-md p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 h-32`}
                 />
               ) : (
                 content.description
@@ -166,31 +235,24 @@ const StudentCourseContent: React.FC<{
             }
             last_updated={content.last_updated}
           />
+          {descriptionError && (
+            <div className="text-red-500">{descriptionError}</div>
+          )}
         </div>
-        {role === "instructor" && (
-          <div>
-            {isEditing ? (
-              <>
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                />
-                <button
-                  onClick={handleUpdate}
-                  className="mt-4 bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-600 transition duration-300"
-                >
-                  Save Changes
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="mt-4 bg-red-500 text-white p-2 rounded-xl hover:bg-red-600 transition duration-300"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <></>
-            )}
+        {role === "instructor" && isEditing && (
+          <div className="flex items-center mt-4">
+            <button
+              onClick={handleUpdate}
+              className="ml-2 bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-600 transition duration-300"
+            >
+              Update Content
+            </button>
+            <button
+              onClick={handleCancel}
+              className="ml-2 bg-red-500 text-white p-2 rounded-xl hover:bg-red-600 transition duration-300"
+            >
+              Cancel
+            </button>
           </div>
         )}
       </div>
