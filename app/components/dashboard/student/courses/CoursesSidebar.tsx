@@ -4,8 +4,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { set } from "date-fns";
-import CreateContentOverlay from "./modules/content/CreateContentOverlay";
+import { Eye, EyeOff } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -207,12 +206,32 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                             )
                           }
                         >
-                          {content.title}
+                          <div className="flex items-center">
+                            {role === "student" ? (
+                              // If the role is student, only display the title without the eye icons
+                              <span>{content.title}</span>
+                            ) : (
+                              // If the role is not student, show the eye icon based on visibility
+                              content.isVisible ? (
+                                <span className="flex items-center">
+                                  <Eye className="text-green-500 mr-2" /> {/* Eye icon for visible */}
+                                  {content.title}
+                                </span>
+                              ) : (
+                                <span className="flex items-center text-gray-400">
+                                  <EyeOff className="text-red-500 mr-2" /> {/* Eye-off icon for not visible */}
+                                  {content.title}
+                                </span>
+                              )
+                            )}
+                          </div>
+
                         </li>
                       ))}
+
                     {role === "instructor" ? (
                       <li
-                        className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
+                        className="pl-16 p-4 text-black font-bold hover:bg-gray-100 bg-gray-50 cursor-pointer"
                         onClick={() =>
                           handleNavigation(
                             `/dashboard/courses/${courseId}/modules/${module.id}/questionbank`
@@ -223,7 +242,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       </li>
                     ) : (
                       <li
-                        className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
+                        className="pl-16 p-4 text-black font-bold hover:bg-gray-100 bg-gray-50 cursor-pointer"
                         onClick={() =>
                           handleNavigation(
                             `/dashboard/courses/${courseId}/modules/${module.id}/quiz`

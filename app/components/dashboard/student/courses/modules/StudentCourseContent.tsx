@@ -159,6 +159,9 @@ const StudentCourseContent: React.FC<{
     setDescription(content.description);
     setFile(null);
     setIsVisible(content.isVisible);
+    setErrorMessage(null)
+    setDescriptionError(null)
+    setTitleError(null)
   };
 
   if (isLoading) {

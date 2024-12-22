@@ -11,9 +11,9 @@ const ContentPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
-  const course_id = params.course_id;
-  const module_id = params.module_id;
-  const content_id = params.content_id;
+  const course_id = String(params.course_id || "");
+  const module_id = String(params.module_id || "");
+  const content_id = String(params.content_id || "");
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -56,7 +56,7 @@ const ContentPage = () => {
         course_id={course_id}
         module_id={module_id}
         content_id={content_id}
-        role={role} // Pass the role to the component
+        role={role|| ""} // Pass the role to the component
       />
     </div>
   );

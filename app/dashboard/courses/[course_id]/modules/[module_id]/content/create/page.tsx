@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Upload, AlertCircle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Image from "next/image";
 const CreateContent = () => {
   const router = useRouter();
   const params = useParams();
@@ -113,6 +114,10 @@ const CreateContent = () => {
 
       formData.append("file", file);
       formData.append("type", fileExtension === "pdf" ? "document" : "video");
+    }
+    else{
+      setErrorMessage("Please upload an attachment. Accepted types: MP4 or PDF")
+      return;
     }
 
     try {
@@ -262,7 +267,7 @@ const CreateContent = () => {
                         <p className="pl-1 text-lg">or drag and drop</p>
                       </div>
                       <p className="text-sm text-gray-500">
-                        PNG, JPG, GIF up to 10MB
+                        PDF, MP4 up to 10MB
                       </p>
                     </div>
                   )}
