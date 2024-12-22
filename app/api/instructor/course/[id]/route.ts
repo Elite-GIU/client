@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request, context: { params: Params }) {
   try {
       const token = req.headers.get("Authorization");
-
+      console.log('token in route '+ token)
       if (!token) {
           return NextResponse.json(
               { error: "Authorization token is required" },
@@ -116,8 +116,8 @@ export async function PUT(req: Request, context: { params: Params }) {
           );
       }
 
-      const { id } = context.params;
-
+      const { id } = await context.params;
+      console.log('Received id:', id); 
       if (!id) {
           return NextResponse.json(
               { error: "Course ID is required" },
@@ -126,14 +126,14 @@ export async function PUT(req: Request, context: { params: Params }) {
       }
 
       const body = await req.json();
-
       // Validation (optional but recommended for better control)
+      /*
       if (!body.category || !body.description || !body.title || !body.keywords || !Array.isArray(body.keywords)) {
           return NextResponse.json(
               { error: "Invalid or missing request body fields" },
               { status: 400 }
           );
-      }
+      }*/
 
       // Adjust fields if necessary (e.g., parsing difficulty_level as a number)
       body.difficulty_level = Number(body.difficulty_level);

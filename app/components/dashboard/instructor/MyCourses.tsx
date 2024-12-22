@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import CourseCard from '../student/courses/CourseCardInstructor';
 
-
 interface Course {
   _id: string;
   title: string;
@@ -49,50 +48,34 @@ const CoursePage: React.FC = () => {
     keywords: string[]; // Adding keywords
   }) => {
     const token = Cookies.get('Token');
+    console.log('updatedCourse: '+updatedCourse.description);
+    console.log('updatedCourse json : ' + JSON.stringify(updatedCourse));
     try {
-      const response = await fetch(`/api/instructor/course/${updatedCourse._id}`, {
+      const response = await fetch(`/api/instructor/course/${updatedCourse._id}/delete`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        
         body: JSON.stringify(updatedCourse),
       });
-  
+      console.log('response: ' + response);
       if (!response.ok) throw new Error('Failed to update course');
   
-      // Update courses state with the updated course data
       setCourses((prevCourses) =>
         prevCourses.map((course) =>
-          course._id === updatedCourse._id ? { ...course, ...updatedCourse } : course
+          course._id === updatedCourse._id
+            ? { ...course, ...updatedCourse }
+            : course
         )
       );
     } catch (error) {
       setError((error as Error).message);
+      alert('Error updating course: ' + (error as Error).message);
     }
   };
-  /*
-  const handleDeletion = async (e: any, id: string) => {
-        e.preventDefault();
-        try {
-          if(!window.confirm("are you sure you want to delete this course ?"))
-            return;
-          const token = Cookies.get('Token');
-          const response = await fetch(/api/instructor/course/${id}/delete, {
-              method: 'DELETE',
-              headers: {Authorization: Bearer ${token}, 'ContentType': 'application/json'},
-          });
-          if(response.ok){
-              alert('Course Deleted successfully');
-              window.location.reload();
-          }else {
-            const reason = await response.json();
-            alert('Error submitting Form! : ' + reason.error.message)
-          }
+  
 
-        }
-    }
-   */
   const deleteCourse = async (id: string) => {
     const token = Cookies.get('Token');
     console.log('The Token is :'+token);
@@ -135,9 +118,14 @@ const CoursePage: React.FC = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-
   return (
-    <div className="p-4">
+    <div className="p-4 space-y-4">
+      {/* Extra Card for Adding a New Course */}
+      <div className="bg-gray-100 rounded-lg p-8 shadow border-dashed border-2 border-gray-300 hover:shadow-lg transition-shadow duration-300 mt-6 cursor-pointer">
+        <h3 className="font-semibold text-xl text-gray-700 text-center">
+          + Add New Course
+        </h3>
+      </div>
       {courses.length > 0 ? (
         courses.map((course) => (
           <CourseCard
@@ -152,6 +140,6 @@ const CoursePage: React.FC = () => {
       )}
     </div>
   );
-};
+} 
 
 export default CoursePage;

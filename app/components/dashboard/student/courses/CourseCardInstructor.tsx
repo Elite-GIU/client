@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FiEdit, FiTrash2, FiSave } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 
 interface CourseCardProps {
   course: {
@@ -27,17 +26,6 @@ interface CourseCardProps {
   }) => void;
   onDelete?: () => void;
 }
-interface Course {
-    _id: string;
-    title: string;
-    category: string;
-    difficulty_level: number;
-    image_path: string;
-    instructor_id: string;
-    instructor_name: string | null;
-    description: string;
-    keywords: string[];
-  }
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -47,8 +35,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
   const [imagePath, setImagePath] = useState(course.image_path);
   const [description, setDescription] = useState(course.description);
   const [keywords, setKeywords] = useState(course.keywords.join(', ')); // Convert array to string for easy editing
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [error, setError] = useState<string | null>(null);
+
   const pathname = usePathname();
 
   const handleSave = () => {
@@ -71,43 +58,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
   const isCoursePage = pathname.endsWith('/courses');
 
 
-  const deleteCourse = async (id: string) => {
-    const token = Cookies.get('Token');
-    console.log('The Token is :'+token);
-    if (!window.confirm("Are you sure you want to delete this course?")) {
-      return;
-    }
-    console.log('after the alert');
-    try {
-      const response = await fetch(`/api/instructor/course/${id}/delete`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('the resposnse'+response.text);
-
-      if (!response.ok) {
-        const reason = await response.json();
-        console.log('the reason '+reason);
-        throw new Error(reason.error?.message || 'Failed to delete course');
-      }
   
-      setCourses((prevCourses) =>
-        prevCourses.filter((course) => course._id !== id)
-      );
-  
-      alert('Course deleted successfully');
-    } catch (error) {
-      console.error("Error deleting course:", error);
-      setError((error as Error).message);
-      alert('Error deleting course: ' + (error as Error).message);
-    }
-  };
-
   return (
+    
     <div className="bg-white rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
+     
       {/* Course Title and Timestamp */}
       <div className="flex justify-between items-center mb-4">
         {isEditing ? (
@@ -127,10 +82,40 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
       </div>
 
       {/* Course Category and Difficulty Level */}
-      <p className="text-sm text-gray-800 flex items-center gap-2">
-        <span>Category: {course.category}</span> | 
-        <span>Difficulty Level: {course.difficulty_level}</span>
-      </p>
+        <p className="text-sm text-gray-800 flex items-center gap-2">
+        {isEditing ? (
+            <>
+                <label>
+                    Category:
+                    <input
+                        type="text"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="ml-2 border rounded-md p-1"
+                        placeholder="Enter category"
+                    />
+                    </label>
+            |
+            <label>
+                    Difficulty Level:
+                    <select
+                        value={difficultyLevel}
+                        onChange={(e) => setDifficultyLevel(Number(e.target.value))}
+                        className="ml-2 border rounded-md p-1">
+                        <option value={1}>Beginner</option>
+                        <option value={2}>Intermediate</option>
+                        <option value={3}>Advanced</option>
+                        {/* Replace values with corresponding numbers */}
+                    </select>
+                    </label>
+            </>
+        ) : (
+            <>
+            <span>Category: {course.category}</span> | 
+            <span>Difficulty Level: {course.difficulty_level}</span>
+            </>
+        )}
+        </p>
 
       {/* Course Instructor */}
       <p className="text-sm text-gray-800 flex items-center gap-2">
@@ -212,14 +197,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
                 </button>
               )
             )}
-           {deleteCourse && (
-                <button
-                    onClick={() => deleteCourse(course._id)} // Pass the id to deleteCourse
-                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300"
-                >
-                    <FiTrash2 className="text-lg" />
-                    Delete
-                </button>
+            {onDelete && (
+              <button
+                onClick={onDelete} // Trigger delete action
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300"
+              >
+                <FiTrash2 className="text-lg" />
+                Delete
+              </button>
             )}
           </div>
         )}
