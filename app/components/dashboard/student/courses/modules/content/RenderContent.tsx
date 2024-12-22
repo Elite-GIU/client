@@ -7,21 +7,23 @@ const RenderContent: React.FC<{
   course_id: string;
   module_id: string;
   content_id: string;
-}> = ({ content, course_id, module_id, content_id }) => {
+  role: string;
+}> = ({ content, course_id, module_id, content_id, role }) => {
   const [filePath, setFilePath] = useState<string | null>(null);
 
   const fetchFile = async () => {
     try {
       const token = Cookies.get("Token");
-      const response = await axios.get(
-        `/api/dashboard/student/course/${course_id}/module/${module_id}/content/${content_id}/file`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          responseType: "blob",
-        }
-      );
+      const endpoint =
+        role === "instructor"
+          ? `/api/dashboard/instructor/course/${course_id}/module/${module_id}/content/${content_id}/file`
+          : `/api/dashboard/student/course/${course_id}/module/${module_id}/content/${content_id}/file`;
+      const response = await axios.get(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob",
+      });
 
       const fileURL = URL.createObjectURL(response.data);
       setFilePath(fileURL);
@@ -58,7 +60,7 @@ const RenderContent: React.FC<{
             <iframe
               src={filePath}
               title="Document Viewer"
-              className="w-full h-full border-none rounded-lg"
+              className="rounded-lg w-full h-[400px] md:h-[800px]"
             ></iframe>
           </div>
         );

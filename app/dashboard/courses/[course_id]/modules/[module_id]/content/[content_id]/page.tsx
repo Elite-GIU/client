@@ -11,9 +11,9 @@ const ContentPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
-  const course_id = params.course_id;
-  const module_id = params.module_id;
-  const content_id = params.content_id;
+  const course_id = String(params.course_id || "");
+  const module_id = String(params.module_id || "");
+  const content_id = String(params.content_id || "");
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -50,28 +50,16 @@ const ContentPage = () => {
     return <div>Loading...</div>;
   }
 
-  if (role === "student") {
-    return (
-      <div>
-        <StudentCourseContent
-          course_id={course_id}
-          module_id={module_id}
-          content_id={content_id}
-        />
-      </div>
-    );
-  }
-
-  if (role === "instructor") {
-    return (
-      <div>
-        <h1 className="text-3xl font-semibold mb-6">Instructor Dashboard</h1>
-        <div>TODO: Implement instructor content functionality</div>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div>
+      <StudentCourseContent
+        course_id={course_id}
+        module_id={module_id}
+        content_id={content_id}
+        role={role|| ""} // Pass the role to the component
+      />
+    </div>
+  );
 };
 
 export default ContentPage;
