@@ -21,7 +21,7 @@ export async function GET(req: Request, context: { params: Params }) {
     }
 
     const response = await axios.get(
-      `http://localhost:3001/api/v1/chat/forums/courses/${course_id}`,
+      `http://localhost:3001/api/v1/chat/study-room/courses/${course_id}`,
       {
         headers: {
           Authorization: token,
@@ -29,11 +29,9 @@ export async function GET(req: Request, context: { params: Params }) {
         }
       }
     )
-
     if (response.status === 200) {
-      return NextResponse.json(response.data)
-    }
-
+      return NextResponse.json(response.data.data)
+    }    
     return NextResponse.json({ error: 'Failed to fetch threads' }, { status: response.status })
     
   }
@@ -47,10 +45,11 @@ export async function GET(req: Request, context: { params: Params }) {
   
 }
 
+
 export async function POST(req: Request, context: { params: Params }) {
   try {
     const { course_id } = await context.params
-    const { title, description } = await req.json()
+    const { title, description, members_list } = await req.json()
     if (!course_id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 })
     }
@@ -61,8 +60,8 @@ export async function POST(req: Request, context: { params: Params }) {
     }
 
     const response = await axios.post(
-      `http://localhost:3001/api/v1/chat/forums/courses/${course_id}`,
-      { title, description },
+      `http://localhost:3001/api/v1/chat/study-room/courses/${course_id}`,
+      { members_list: members_list, title: title, description: description },
       {
         headers: {
           Authorization: token,
@@ -70,14 +69,14 @@ export async function POST(req: Request, context: { params: Params }) {
         }
       }
     )
-
     if (response.status === 201) {
-      return NextResponse.json(response.data)
-    }
-
-    return NextResponse.json({ error: 'Failed to create thread' }, { status: response.status })
+      return NextResponse.json(response.data.data)
+    }    
+    return NextResponse.json({ error: 'Failed to create room' }, { status: response.status })
+    
   }
   catch (error) {
+
     if (axios.isAxiosError(error) && error.response) {
       return NextResponse.json({ error: error.response.data.message || 'Server error' }, { status: error.response.status })
     }

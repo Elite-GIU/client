@@ -13,6 +13,7 @@ export async function GET(req: Request, context: { params: Params }) {
       const url = new URL(req.url);
       const name = url.searchParams.get('name') || null; // Default to empty string if not provided
       const page = Number(url.searchParams.get('page')) || 1; // Default to page 1 if not provided
+      const limit = Number(url.searchParams.get('limit')) || 10; // Default to page 1 if not provided
   
       const token = req.headers.get('Authorization');
   
@@ -22,7 +23,7 @@ export async function GET(req: Request, context: { params: Params }) {
   
       const response = await axios.get(`http://localhost:3001/api/v1/dashboard/instructor/course/${course_id}/students`, {
         headers: { Authorization: token },
-        params: { name, page }
+        params: { name, page, limit }
       });
   
       if (response.status === 200) {

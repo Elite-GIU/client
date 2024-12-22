@@ -11,7 +11,6 @@ export async function GET(req: Request, context: { params: Params }) {
     try {
         const { course_id } = await context.params;
 
-        console.log(course_id);
         if (!course_id) {
             return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
         }
@@ -31,7 +30,6 @@ export async function GET(req: Request, context: { params: Params }) {
             }
         );
 
-        console.log(response.data);
 
         if (response.status === 200) {
             return NextResponse.json({ modules: response.data });
