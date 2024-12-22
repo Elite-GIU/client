@@ -154,172 +154,180 @@ const InstructorCourse =  (props: any) => {
 
     return (
         <>
-        {course.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm">
-              No module found. Start by uploading a module!
-            </div>
-          ) : (
-            <div style={{alignContent: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {course.map((module) => (
-                    <div
-                    key={module.title}
-                    className="border border-gray-200 rounded-lg shadow-md"
-                    >
-                    <div className="p-4">
-                        <h3 className="text-lg font-medium mt-2 text-black">
-                        {module.title}
-                        </h3>
-                        {/* Truncate description to two lines */}
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Assessment Type: {module.assessmentType}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Number of questions: {module.nrOfQuestions}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Passing Grade: {module.passingGrade}
-                        </p>
-                        <a
-                            className="text-blue-600 text-sm font-medium hover:underline"
-                            style={{marginTop: '3rem'}} 
-                            onClick={() => openEditMenu(module)}
-                        >
-                            edit
-                        </a>
-                    </div>
-                    </div>
-                ))}
+            {course.length === 0 ? (
+                <div className="text-center text-gray-500 text-sm">
+                    No module found. Start by uploading a module!
                 </div>
-                <a 
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                    style={{marginTop: '2rem'}}
-                    onClick={() => {setShowForm(!showForm); setShowEdit(false)}}
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {course.map((module) => (
+                        <div
+                            key={module.title}
+                            className="border border-gray-200 rounded-lg shadow-md"
+                        >
+                            <div className="p-4">
+                                <h3 className="text-lg font-medium mt-2 text-black">
+                                    {module.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+                                    Assessment Type: {module.assessmentType}
+                                </p>
+                                <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+                                    Number of questions: {module.nrOfQuestions}
+                                </p>
+                                <p className="text-sm text-gray-600 mt-1 line-clamp-1">
+                                    Passing Grade: {module.passingGrade}
+                                </p>
+                                <a
+                                    className="text-blue-600 text-sm font-medium hover:underline"
+                                    style={{ marginTop: '3rem' }}
+                                    onClick={() => openEditMenu(module)}
+                                >
+                                    edit
+                                </a>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+            <a
+                className="text-blue-600 text-sm font-medium hover:underline"
+                style={{ marginTop: '2rem', display: 'block', textAlign: 'center' }}
+                onClick={() => {
+                    setShowForm(!showForm);
+                    setShowEdit(false);
+                }}
+            >
+                {showForm ? "Hide" : "Add Module"}
+            </a>
+            {showForm && (
+                <form
+                    onSubmit={handleSubmit}
+                    className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
+                    style={{ textAlign: 'left', margin: '0 auto' }}
                 >
-                    {showForm? "Hide" : "Add Module"}
-                </a>
-                {
-                    showForm && 
-                    (
-                        <form
-                            onSubmit={handleSubmit}
-                            className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
-                            style={{ textAlign: 'left' }}
-                        >
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Title</label>
-                                <input
-                                type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Number of Questions</label>
-                                <input
-                                type="number"
-                                name="nrOfQuestions"
-                                value={formData.nrOfQuestions}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Assessment Type</label>
-                                <input
-                                type="text"
-                                name="assessmentType"
-                                value={formData.assessmentType}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Passing Grade</label>
-                                <input
-                                type="number"
-                                name="passingGrade"
-                                value={formData.passingGrade}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
-                            >
-                                Add
-                            </button>
-                        </form>
-                    )
-                }
-                {
-                    showEdit && 
-                    (
-                        <form
-                            onSubmit={handleUpdate}
-                            className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
-                            style={{ textAlign: 'left' }}
-                        >
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Number of Questions</label>
-                                <input
-                                type="number"
-                                name="numberOfQuestions"
-                                value={updateData.numberOfQuestions}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Assessment Type</label>
-                                <input
-                                type="text"
-                                name="assessmentType"
-                                value={updateData.assessmentType}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Passing Grade</label>
-                                <input
-                                type="number"
-                                name="passingGrade"
-                                value={updateData.passingGrade}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
-                            >
-                                Update
-                            </button>
-                        </form>
-                    )
-                }
-            </div>
-          )}
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Title
+                        </label>
+                        <input
+                            type="text"
+                            name="title"
+                            value={formData.title}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Number of Questions
+                        </label>
+                        <input
+                            type="number"
+                            name="nrOfQuestions"
+                            value={formData.nrOfQuestions}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Assessment Type
+                        </label>
+                        <input
+                            type="text"
+                            name="assessmentType"
+                            value={formData.assessmentType}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Passing Grade
+                        </label>
+                        <input
+                            type="number"
+                            name="passingGrade"
+                            value={formData.passingGrade}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
+                    >
+                        Add
+                    </button>
+                </form>
+            )}
+            {showEdit && (
+                <form
+                    onSubmit={handleUpdate}
+                    className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
+                    style={{ textAlign: 'left', margin: '0 auto' }}
+                >
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Number of Questions
+                        </label>
+                        <input
+                            type="number"
+                            name="numberOfQuestions"
+                            value={updateData.numberOfQuestions}
+                            onChange={handleEditDataChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Assessment Type
+                        </label>
+                        <input
+                            type="text"
+                            name="assessmentType"
+                            value={updateData.assessmentType}
+                            onChange={handleEditDataChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <div className="mb-3">
+                        <label className="block text-sm font-medium text-gray-700">
+                            Passing Grade
+                        </label>
+                        <input
+                            type="number"
+                            name="passingGrade"
+                            value={updateData.passingGrade}
+                            onChange={handleEditDataChange}
+                            className="w-full border border-gray-300 rounded px-2 py-1 text-black"
+                            required
+                        />
+                    </div>
+    
+                    <button
+                        type="submit"
+                        className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
+                    >
+                        Update
+                    </button>
+                </form>
+            )}
         </>
     );
-}
+}    
 
 export default InstructorCourse;
