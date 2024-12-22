@@ -150,7 +150,7 @@ const StudentCourse = ({ id }: { id: string }) => {
   };
 
   return (
-      <div
+    <div
         key={course._id}
         className="border border-gray-200 rounded-lg shadow-md"
       >
@@ -159,7 +159,8 @@ const StudentCourse = ({ id }: { id: string }) => {
         alt={course.title}
         className="w-full h-40 object-cover rounded-t-lg"
       />
-      <div className="p-4">
+      <div className="p-4 grid grid-cols-2 gap-4">
+        <div>
         {getDifficultyBadge(course.difficulty_level)}
         <p className="text-lg font-medium mt-2 text-black">{course.title}</p>
         <p className="text-sm text-gray-500 mt-1">
@@ -175,6 +176,7 @@ const StudentCourse = ({ id }: { id: string }) => {
           >
             Continue Learning ...
           </a>
+        </div>
         </div>
         <div className="mt-4">
           <CourseStarRating course_id={course._id} />

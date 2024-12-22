@@ -89,8 +89,8 @@ import axios from "axios";
     return (
         <div className="flex flex-col items-end">
           {/* Course Rating */}
-          <div className="w-full p-4 mb-6 text-end">
-            <h2 className="text-m font-semibold text-gray-700 mb-2">Rate the Course</h2>
+          <div className="w-full mr-7 mb-6 text-end">
+            <h2 className="text-xs font-semibold text-gray-700 mb-2 pr-8">Rate the Course</h2>
             <div className="flex justify-end space-x-2">
               {Array.from({ length: 5 }).map((_, index) => (
                 <span
@@ -115,8 +115,8 @@ import axios from "axios";
           </div>
     
           {/* Instructor Rating */}
-          <div className="w-full p-4 mb-6 text-end">
-            <h2 className="text-m font-semibold text-gray-700 mb-2">Rate the Instructor</h2>
+          <div className="w-full mr-7 text-end">
+            <h2 className="text-xs font-semibold text-gray-700 mb-2 pr-7">Rate the Instructor</h2>
             <div className="flex justify-end space-x-2">
               {Array.from({ length: 5 }).map((_, index) => (
                 <span
@@ -141,7 +141,7 @@ import axios from "axios";
           </div>
     
           {/* Fixed Height Container for Message */}
-          <div className="h-6 flex items-center justify-center text-gray-600 text-sm">
+          <div className="h-6 mr-7 mt-4 flex items-center justify-center text-gray-600 text-sm">
             {message}
           </div>
         </div>
