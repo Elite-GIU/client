@@ -67,7 +67,6 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
     { value: 'Data Science', label: 'Data Science' },
     { value: 'Web Development', label: 'Web Development' },
     { value: 'Machine Learning', label: 'Machine Learning' },
-    { value: 'Data Science', label: 'Data Science' },
     { value: 'Databases', label: 'Databases' },
   ];
 
