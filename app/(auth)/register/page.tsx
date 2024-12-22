@@ -11,6 +11,21 @@ import { BookOpenIcon, UserIcon } from '@heroicons/react/24/outline';
 import { set } from 'date-fns';
 import { divider } from '@nextui-org/theme';
 
+const preferences = [
+  "Data Science",
+  "Security",
+  "Software",
+  "Media",
+  "Coding",
+  "Databases",
+  "Programming",
+  "Math",
+  "Business",
+  "Analytics",
+  "Deep Learning",
+  "Management",
+];
+
 const RegisterPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -69,6 +84,14 @@ const RegisterPage: React.FC = () => {
     } catch (err) {
       setError((err as Error).message || 'An error occurred during registration.');
     }
+  };
+
+  const togglePreference = (preference: string) => {
+    setPreferenceList((prevList) =>
+      prevList.includes(preference)
+        ? prevList.filter((item) => item !== preference)
+        : [...prevList, preference]
+    );
   };
 
 
@@ -153,16 +176,28 @@ const RegisterPage: React.FC = () => {
     (
       <div>
         <FormCard title="Select your preferences">
-          <InputField
-            label="Select your preferences"
-            type="text"
-            placeholder="Enter your preferences"
-            onChange={(e) => setPreferenceList([...preferenceList, e.target.value])}
-          />
-          <div className="flex justify-center mb-4">
+          <div className="mb-6">
+            <p className="text-lg font-semibold text-gray-800 mb-6 text-center">Select the topics that interest you</p>
+            <div className="flex flex-wrap justify-center gap-4 mb-6">
+              {preferences.map((preference) => (
+                <button
+                  key={preference}
+                  onClick={() => togglePreference(preference)}
+                  className={`px-6 py-3 rounded-full text-sm font-medium transition duration-300 ease-in-out ${
+                    preferenceList.includes(preference)
+                      ? "bg-[#3D5A80] text-white shadow-lg scale-105"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {preference}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-center">
             <AuthButton label="Confirm Preferences" onClick={handleSignUp} />
           </div>
-          </FormCard>
+        </FormCard>
       </div>
     )
      }
