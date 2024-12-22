@@ -29,7 +29,6 @@ export async function GET(req: Request) {
         }
         return NextResponse.json({ error: 'Failed to retrieve instructor data' }, { status: response.status });
     } catch (error) {
-        console.log('Error fetching instructor data:', error);
         if (axios.isAxiosError(error) && error.response) {
             return NextResponse.json(
                 { error: error.response.data.message || 'Server error' },

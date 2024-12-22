@@ -2,15 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import InstructorCourse from '../../../components/dashboard/instructor/InstructorCourse'
 import Cookies from 'js-cookie';
-import { Params } from 'next/dist/server/request/params';
-import StudentCourse from '@/app/components/dashboard/student/StudentCourse';
+import AdminStudentsComponent from '@/app/components/admin/students/AdminStudents';
+ // Replace with your admin students component
 
-const CoursePage =  (context : { params: Promise<Params>}) => {
+const StudentsPage = () => {
   const [role, setRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [courseId, setCourseId] = useState<any>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -44,41 +42,21 @@ const CoursePage =  (context : { params: Promise<Params>}) => {
     fetchRole();
   }, [router]);
 
-  useEffect(() => {
-    async function awaitParams() {
-        const {course_id} = await context.params;
-        setCourseId(course_id); 
-    }
-    awaitParams();
-  }, []);
-
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+    return <div>Loading...</div>;
   }
 
-  if (role === 'student') {
+  if (role === 'admin') {
     return (
       <div>
-        {courseId ? 
-        <StudentCourse id = {courseId}/> :
-        'loading'
-        }
+        <AdminStudentsComponent />
       </div>
     );
   }
 
-  if (role === 'instructor') {
-    return (
-      <div>
-        {courseId ? 
-        <InstructorCourse id = {courseId}/> :
-        'loading'
-        }
-      </div>
-    );
-  }
-
-  return null; 
+  router.push('/login'); // Redirect if the role isn't admin
+  return null;
 };
 
-export default CoursePage;
+export default StudentsPage;
+
