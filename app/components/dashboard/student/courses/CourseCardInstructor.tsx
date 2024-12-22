@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FiEdit, FiTrash2, FiSave } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Cookies from 'js-cookie'
 
 interface CourseCardProps {
   course: {
@@ -55,13 +56,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
     setIsEditing(false); // Exit edit mode after saving
   };
 
+
   const isCoursePage = pathname.endsWith('/courses');
 
 
   
   return (
     
-    <div className="bg-white rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white text-black rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
      
       {/* Course Title and Timestamp */}
       <div className="flex justify-between items-center mb-4">
@@ -119,7 +121,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
 
       {/* Course Instructor */}
       <p className="text-sm text-gray-800 flex items-center gap-2">
-        Instructor: {course.instructor_name ? course.instructor_name : 'Unknown'}
+        {course.instructor_name ? course.instructor_name : 'Unknown'}
       </p>
 
       {/* Course Description */}

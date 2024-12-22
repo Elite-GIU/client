@@ -105,39 +105,26 @@ export async function POST(req: Request) {
   }
 }
 
-export async function PUT(req: Request, context: { params: Params }) {
+export async function PUT(req: Request, context: { params: Promise<Params> }) {
   try {
-      const token = req.headers.get("Authorization");
-      console.log('token in route '+ token)
-      if (!token) {
-          return NextResponse.json(
-              { error: "Authorization token is required" },
-              { status: 401 }
-          );
-      }
+    const {id} = await context.params;
 
-      const { id } = await context.params;
-      console.log('Received id:', id); 
-      if (!id) {
-          return NextResponse.json(
-              { error: "Course ID is required" },
-              { status: 400 }
-          );
-      }
+    if (!id) {
+      return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
+    }
 
-      const body = await req.json();
-      // Validation (optional but recommended for better control)
-      /*
-      if (!body.category || !body.description || !body.title || !body.keywords || !Array.isArray(body.keywords)) {
-          return NextResponse.json(
-              { error: "Invalid or missing request body fields" },
-              { status: 400 }
-          );
-      }*/
+    const token = req.headers.get('Authorization');
 
-      // Adjust fields if necessary (e.g., parsing difficulty_level as a number)
-      body.difficulty_level = Number(body.difficulty_level);
+    if (!token) {
+      return NextResponse.json({ error: 'Authorization token is required' }, { status: 401 });
+    }
+
+    const body = await req.json();
+
       delete body._id;
+
+      body.difficulty_level = Number(body.difficulty_level);
+
       const response = await axios.put(
           `http://localhost:3001/api/v1/instructor/courses/${id}`,
           body,
@@ -148,7 +135,6 @@ export async function PUT(req: Request, context: { params: Params }) {
               },
           }
       );
-
       if (response.status === 200) {
           return NextResponse.json(response.data);
       }
