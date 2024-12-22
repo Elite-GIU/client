@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { User, BookOpen, Calendar } from "lucide-react";
 import Cookies from "js-cookie";
 import Image from "next/image";
+import { CourseStarRating } from "./courses/CourseStarRating";
 
 interface Course {
   _id: string;
@@ -13,6 +14,8 @@ interface Course {
   instructor_name: string | null;
   description: string;
   created_at: string;
+  course_rate: number | null;
+  instructor_rate: number | null;
 }
 interface Instructor {
   _id: string;
@@ -30,6 +33,8 @@ const StudentCourse = ({ id }: { id: string }) => {
     instructor_name: "",
     description: "",
     created_at: "",
+    course_rate: null,
+    instructor_rate: null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -145,10 +150,10 @@ const StudentCourse = ({ id }: { id: string }) => {
   };
 
   return (
-    <div
-      key={course._id}
-      className="border border-gray-200 rounded-lg shadow-md"
-    >
+      <div
+        key={course._id}
+        className="border border-gray-200 rounded-lg shadow-md"
+      >
       <img
         src={course.image_path}
         alt={course.title}
@@ -160,7 +165,6 @@ const StudentCourse = ({ id }: { id: string }) => {
         <p className="text-sm text-gray-500 mt-1">
           {course.instructor_name || "Unknown Instructor"}
         </p>
-        {/* Truncate description to two lines */}
         <p className="text-sm text-gray-600 mt-1 line-clamp-1">
           {course.description}
         </p>
@@ -171,6 +175,9 @@ const StudentCourse = ({ id }: { id: string }) => {
           >
             Continue Learning ...
           </a>
+        </div>
+        <div className="mt-4">
+          <CourseStarRating course_id={course._id} />
         </div>
       </div>
     </div>
