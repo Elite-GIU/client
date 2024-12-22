@@ -364,17 +364,33 @@ export default function ModulePage() {
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-black mb-2">Difficulty (1-3):</label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="3"
-                            value={newQuestion.difficulty}
-                            onChange={(e) => setNewQuestion({ ...newQuestion, difficulty: parseInt(e.target.value) })}
-                            className="w-full p-2 border rounded text-black"
-                            required
-                        />
+                    <label className="block text-black mb-2">Difficulty:</label>
+                    <div className="flex space-x-2">
+                        <button
+                            type="button"
+                            className={`p-2 border rounded ${newQuestion.difficulty === 1 ? 'bg-green-500 text-white border-2 border-green-700 shadow-md' : 'bg-green-500 text-white shadow-md bg-opacity-50'}`}
+                            onClick={() => setNewQuestion({ ...newQuestion, difficulty: 1 })}
+                        >
+                            Easy
+                        </button>
+                        <button
+                            type="button"
+                            className={`p-2 border rounded ${newQuestion.difficulty === 2 ? 'bg-yellow-500 text-white border-2 border-yellow-700 shadow-md' : 'bg-yellow-500 text-white shadow-md bg-opacity-50'}`}
+                            onClick={() => setNewQuestion({ ...newQuestion, difficulty: 2 })}
+                        >
+                            Medium
+                        </button>
+                        <button
+                            type="button"
+                            className={`p-2 border rounded ${newQuestion.difficulty === 3 ? 'bg-red-500 text-white border-2 border-red-700 shadow-md' : 'bg-red-500 text-white shadow-md bg-opacity-50'}`}
+                            onClick={() => setNewQuestion({ ...newQuestion, difficulty: 3 })}
+                        >
+                            Hard
+                        </button>
                     </div>
+                </div>
+
+
 
                     <div className="flex gap-2">
                         <button
