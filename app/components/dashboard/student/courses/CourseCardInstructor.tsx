@@ -3,6 +3,7 @@ import { FiEdit, FiTrash2, FiSave } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Cookies from 'js-cookie'
+import Select from 'react-select';
 
 interface CourseCardProps {
   course: {
@@ -60,7 +61,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
   const isCoursePage = pathname.endsWith('/courses');
 
 
-  
+   // Keywords options for Select dropdown
+   const keywordOptions = [
+    { value: 'AI', label: 'AI' },
+    { value: 'Data Science', label: 'Data Science' },
+    { value: 'Web Development', label: 'Web Development' },
+    { value: 'Machine Learning', label: 'Machine Learning' },
+  ];
+
   return (
     
     <div className="bg-white text-black rounded-lg p-8 shadow border hover:shadow-lg transition-shadow duration-300">
@@ -86,42 +94,51 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
       {/* Course Category and Difficulty Level */}
         <p className="text-sm text-gray-800 flex items-center gap-2">
         {isEditing ? (
-            <>
-                <label>
-                    Category:
-                    <input
-                        type="text"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className="ml-2 border rounded-md p-1"
-                        placeholder="Enter category"
-                    />
-                    </label>
-            |
-            <label>
-                    Difficulty Level:
-                    <select
-                        value={difficultyLevel}
-                        onChange={(e) => setDifficultyLevel(Number(e.target.value))}
-                        className="ml-2 border rounded-md p-1">
-                        <option value={1}>Beginner</option>
-                        <option value={2}>Intermediate</option>
-                        <option value={3}>Advanced</option>
-                        {/* Replace values with corresponding numbers */}
-                    </select>
-                    </label>
-            </>
-        ) : (
-            <>
-            <span>Category: {course.category}</span> | 
-            <span>Difficulty Level: {course.difficulty_level}</span>
-            </>
-        )}
+    <>
+        <label>
+            Category:
+            <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="ml-2 border rounded-md p-1"
+                placeholder="Enter category"
+            />
+              </label>
+              |
+              <label>
+                  Difficulty Level:
+                  <select
+                      value={difficultyLevel}
+                      onChange={(e) => setDifficultyLevel(Number(e.target.value))}
+                      className="ml-2 border rounded-md p-1"
+                  >
+                      <option value={1}>Beginner</option>
+                      <option value={2}>Intermediate</option>
+                      <option value={3}>Advanced</option>
+                  </select>
+              </label>
+          </>
+          ) : (
+          <>
+              <span>Category: {course.category}</span> | 
+              <span
+                  className={`ml-2 p-2 rounded-md font-semibold text-white 
+                      ${course.difficulty_level === 1 ? 'bg-green-500' : 
+                        course.difficulty_level === 2 ? 'bg-orange-500' : 
+                        'bg-red-500'}`}
+              >
+                  {course.difficulty_level === 1 ? 'Beginner' :
+                                      course.difficulty_level === 2 ? 'Intermediate' :
+                                      'Advanced'}
+              </span>
+          </>
+      )}
         </p>
 
       {/* Course Instructor */}
       <p className="text-sm text-gray-800 flex items-center gap-2">
-        {course.instructor_name ? course.instructor_name : 'Unknown'}
+        {course.instructor_name ? course.instructor_name : 'Unknown Instructor'}
       </p>
 
       {/* Course Description */}
@@ -153,30 +170,41 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
         <img src={course.image_path} alt="Course Image" className="mt-4 w-full h-48 object-cover rounded-md" />
       )}
 
-      {/* Keywords */}
-      {isEditing ? (
-        <input
-          type="text"
-          value={keywords}
-          onChange={(e) => setKeywords(e.target.value)}
-          className="border rounded-md p-2 w-full mt-2"
-          placeholder="Enter keywords (separate by commas)"
-        />
-      ) : (
-        <p className="mt-2 text-lg text-gray-900">
-          Keywords: {course.keywords.join(', ')}
-        </p>
-      )}
+     {/* Keywords */}
+{isEditing ? (
+  <Select
+    isMulti
+    value={keywords.split(',').map((keyword) => ({
+      value: keyword.trim(),
+      label: keyword.trim(),
+    }))}
+    onChange={(selectedOptions: any) =>
+      setKeywords(selectedOptions.map((option: any) => option.value).join(', '))
+    }
+    options={keywordOptions}
+    className="mt-2 w-full"
+  />
+) : (
+  <div className="mt-2 text-lg text-gray-900">
+    <p className="font-semibold text-xl">Keywords:</p>
+    <div className="flex flex-wrap gap-2 mt-1">
+      {course.keywords.map((keyword, index) => (
+        <span
+          key={index}
+          className="inline-flex items-center py-1 px-3 text-sm font-medium text-white bg-blue-500 rounded-full shadow-lg hover:bg-blue-600 transition duration-200"
+        >
+          {keyword}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
 
       {/* Divider */}
       <hr className="my-3 border-gray-300" />
 
       {/* Actions */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center text-black hover:underline cursor-pointer">
-          <p>Course Details</p>
-        </div>
-
         {/* Update and Delete Buttons */}
         {(isCoursePage) && (
           <div className="flex gap-3">
