@@ -67,6 +67,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
     { value: 'Data Science', label: 'Data Science' },
     { value: 'Web Development', label: 'Web Development' },
     { value: 'Machine Learning', label: 'Machine Learning' },
+    { value: 'Data Science', label: 'Data Science' },
+    { value: 'Databases', label: 'Databases' },
   ];
 
   return (
@@ -123,10 +125,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
           <>
               <span>Category: {course.category}</span> | 
               <span
-                  className={`ml-2 p-2 rounded-md font-semibold text-white 
-                      ${course.difficulty_level === 1 ? 'bg-green-500' : 
-                        course.difficulty_level === 2 ? 'bg-orange-500' : 
-                        'bg-red-500'}`}
+                  className={`ml-2 p-2 rounded-md font-semibold
+                      ${course.difficulty_level === 1 ? 'bg-green-100 text-green-600 border-green-500' : 
+                        course.difficulty_level === 2 ? 'bg-orange-100 text-orange-600 border-orange-500' : 
+                        'bg-red-100 text-red-600 border-red-500'}`}
               >
                   {course.difficulty_level === 1 ? 'Beginner' :
                                       course.difficulty_level === 2 ? 'Intermediate' :
@@ -191,7 +193,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onUpdate, onDelete }) =
       {course.keywords.map((keyword, index) => (
         <span
           key={index}
-          className="inline-flex items-center py-1 px-3 text-sm font-medium text-white bg-blue-500 rounded-full shadow-lg hover:bg-blue-600 transition duration-200"
+          className="inline-flex items-center py-1 px-3 text-sm font-medium rounded-full shadow-lg transition duration-200 bg-slate-200 text-slate-600 border-slate-500"
         >
           {keyword}
         </span>

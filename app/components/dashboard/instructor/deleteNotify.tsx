@@ -28,11 +28,11 @@ const showConfirmationDialog = (message: string): Promise<boolean> => {
 
     dialogBox.innerHTML = `
       <h3 style="color: black; font-size: 20px; font-weight: bold;">${message}</h3>
-      <input id="confirmInput" type="text" placeholder="Type 'Confirm' to delete" style="margin: 20px 0; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; width: 80%;" />
+      <input id="confirmInput" type="text" placeholder="Type 'Delete' to delete" style="margin: 20px 0; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; width: 80%;" />
       <div id="errorMessage" style="color: red; font-size: 14px; display: none;"></div>
       <div>
-        <button id="confirmBtn" style="margin: 15px 20px; padding: 15px 25px; cursor: pointer; font-size: 16px; border: none; background-color: #4CAF50; color: white; border-radius: 5px;">Confirm</button>
-        <button id="cancelBtn" style="margin: 15px 20px; padding: 15px 25px; cursor: pointer; font-size: 16px; border: none; background-color: #f44336; color: white; border-radius: 5px;">Cancel</button>
+        <button id="confirmBtn" style="margin: 15px 20px; padding: 15px 25px; cursor: pointer; font-size: 16px; border: none; background-color: #ff4433; color: white; border-radius: 5px;">Delete</button>
+        <button id="cancelBtn" style="margin: 15px 20px; padding: 15px 25px; cursor: pointer; font-size: 16px; border: none; background-color: #4CAF50; color: white; border-radius: 5px;">Cancel</button>
       </div>
     `;
 
@@ -45,11 +45,11 @@ const showConfirmationDialog = (message: string): Promise<boolean> => {
     const errorMessage = document.getElementById('errorMessage')!;
 
     confirmBtn.onclick = () => {
-      if (confirmInput.value.trim() === 'Confirm') {
+      if (confirmInput.value.trim() === 'Delete') {
         resolve(true);
         document.body.removeChild(confirmationDialog); // Close the dialog
       } else {
-        errorMessage.textContent = 'You must type "Confirm" to proceed.';
+        errorMessage.textContent = 'You must type "Delete" to proceed.';
         errorMessage.style.display = 'block'; // Show the error message in red
       }
     };

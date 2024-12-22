@@ -119,49 +119,6 @@ const CoursePage: React.FC = () => {
     }
   };
   
-/*
-  const deleteCourse = async (id: string) => {
-    const token = Cookies.get('Token');
-    console.log('The Token is:', token);
-  
-    if (!window.confirm("Are you sure you want to delete this course?")) {
-      return;
-    }
-  
-    try {
-      const response = await fetch(`/api/instructor/course/${id}/delete`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      console.log('Response Status:', response.status);
-  
-      // Handle empty or non-JSON responses
-      if (!response.ok) {
-        const reason = response.headers.get('Content-Type')?.includes('application/json')
-          ? await response.json()
-          : { error: { message: 'Failed to delete course' } };
-  
-        console.log('The reason:', reason);
-        throw new Error(reason.error?.message || 'Failed to delete course');
-      }
-  
-      // Update the state
-      setCourses((prevCourses) =>
-        prevCourses.filter((course) => course._id !== id)
-      );
-  
-      alert('Course deleted successfully');
-    } catch (error) {
-      console.error("Error deleting course:", error);
-      setError((error as Error).message);
-      alert('Error deleting course: ' + (error as Error).message);
-    }
-  };
-  */
   const createCourse = async () => {
     const token = Cookies.get('Token');
     try {
@@ -177,7 +134,10 @@ const CoursePage: React.FC = () => {
       if (!response.ok) throw new Error('Failed to create course');
 
       const createdCourse = await response.json();
-      setCourses((prevCourses) => [...prevCourses, createdCourse]);
+      const instructorName = await fetchInstructorName(createdCourse.instructor_id);
+      const courseWithInstructorName = { ...createdCourse, instructor_name: instructorName };
+
+      setCourses((prevCourses) => [...prevCourses, courseWithInstructorName]);
       setShowModal(false); // Close the modal
       alert('Course created successfully');
     } catch (error) {
@@ -208,6 +168,7 @@ const CoursePage: React.FC = () => {
           + Add New Course
         </h3>
       </div>
+      <div className="grid grid-cols-2 gap-4">
       {courses.length > 0 ? (
         courses.map((course) => (
           <CourseCard
@@ -220,6 +181,7 @@ const CoursePage: React.FC = () => {
       ) : (
         <p>No courses available</p>
       )}
+      </div>
 
       {/* Enhanced Modal for Adding a New Course */}
     {showModal && (
