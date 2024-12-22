@@ -31,93 +31,93 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
   const courseId = pathname.split("/")[3];
-
   const [modules, setModules] = useState<ModuleItem[]>([]);
   const [expandedModules, setExpandedModules] = useState<{
     [key: string]: boolean;
   }>({});
   const [isModulesExpanded, setIsModulesExpanded] = useState(false);
   const [role, setRole] = useState<string | null>(null);
-  useEffect(() => {
-    async function fetchModules() {
-      const token = Cookies.get("Token");
-      if (!token) {
-        router.push("/login");
-        return;
+
+  async function fetchModules() {
+    const token = Cookies.get("Token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    const decodedToken: { role: string } = jwtDecode(token);
+    const role = decodedToken.role;
+    setRole(role);
+    const response = await fetch(
+      `/api/dashboard/${role}/course/${courseId}/`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
+    );
 
-      const decodedToken: { role: string } = jwtDecode(token);
-      const role = decodedToken.role;
-      setRole(role);
-      const response = await fetch(
-        `/api/dashboard/${role}/course/${courseId}/`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+    if (!response.ok) throw new Error("Failed to fetch modules");
+    const data = await response.json();
 
-      if (!response.ok) throw new Error("Failed to fetch modules");
-      const data = await response.json();
-
-      const fetchedModules = await Promise.all(
-        data.modules.map(async (module: { _id: string; title: string }) => {
-          const moduleResponse = await fetch(
-            `/api/dashboard/${role}/course/${courseId}/module/${module._id}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-
-          if (moduleResponse.status === 403) {
-            return {
-              id: module._id,
-              name: module.title,
-              href: `/dashboard/courses/${courseId}/modules/${module._id}`,
-              contents: [],
-              isLocked: true,
-            };
+    const fetchedModules = await Promise.all(
+      data.modules.map(async (module: { _id: string; title: string }) => {
+        const moduleResponse = await fetch(
+          `/api/dashboard/${role}/course/${courseId}/module/${module._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
           }
+        );
 
-          const moduleData = await moduleResponse.json();
-          if (!moduleData.module) {
-            return {
-              id: module._id,
-              name: module.title,
-              href: `/dashboard/courses/${courseId}/modules/${module._id}`,
-              contents: [],
-              isLocked: true,
-            };
-          }
-
+        if (moduleResponse.status === 403) {
           return {
             id: module._id,
             name: module.title,
             href: `/dashboard/courses/${courseId}/modules/${module._id}`,
-            contents: moduleData.module.content
-              ? moduleData.module.content.map(
-                  (content: {
-                    _id: string;
-                    title: string;
-                    description: string;
-                    type: string;
-                    isVisible: boolean;
-                  }) => ({
-                    id: content._id,
-                    title: content.title,
-                    description: content.description,
-                    type: content.type,
-                    isVisible: content.isVisible,
-                  })
-                )
-              : [],
-            isLocked: false,
+            contents: [],
+            isLocked: true,
           };
-        })
-      );
+        }
 
-      setModules(fetchedModules);
-    }
+        const moduleData = await moduleResponse.json();
+        if (!moduleData.module) {
+          return {
+            id: module._id,
+            name: module.title,
+            href: `/dashboard/courses/${courseId}/modules/${module._id}`,
+            contents: [],
+            isLocked: true,
+          };
+        }
 
+        return {
+          id: module._id,
+          name: module.title,
+          href: `/dashboard/courses/${courseId}/modules/${module._id}`,
+          contents: moduleData.module.content
+            ? moduleData.module.content.map(
+                (content: {
+                  _id: string;
+                  title: string;
+                  description: string;
+                  type: string;
+                  isVisible: boolean;
+                }) => ({
+                  id: content._id,
+                  title: content.title,
+                  description: content.description,
+                  type: content.type,
+                  isVisible: content.isVisible,
+                })
+              )
+            : [],
+          isLocked: false,
+        };
+      })
+    );
+
+    setModules(fetchedModules);
+  }
+
+  useEffect(() => {
     fetchModules();
   }, [courseId]);
 
@@ -145,6 +145,10 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     );
   };
 
+  const manageModules=()=>{
+    router.push(`/dashboard/courses/${courseId}`)
+  }
+
   return (
     <div
       className={`${
@@ -152,6 +156,12 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       } lg:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}
     >
       <ul className="p-0 m-0">
+        <li
+            className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"
+            onClick={manageModules}
+          >
+            <span className="ml-6 text-black flex-1 font-bold">Manage Modules</span>
+        </li>
         <li
           className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"
           onClick={toggleModules}
@@ -272,7 +282,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             handleNavigation(`/dashboard/courses/${courseId}/rooms`)
           }
         >
-          <span className="ml-6 text-black">Rooms</span>
+          <span className="ml-6 text-black">Study Rooms</span>
         </li>
       </ul>
     </div>
