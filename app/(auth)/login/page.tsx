@@ -43,7 +43,7 @@ const LoginPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status}`);
+        throw new Error(`Invalid email`);
       }
 
       
@@ -162,6 +162,12 @@ const LoginPage: React.FC = () => {
             )
           )}
         </div>
+        <p className="mt-5 text-center text-sm text-gray-600">
+          Don't have an account?{' '}
+          <a href="/register" className="text-[#3D5A80] hover:underline">
+            Register a new account
+          </a>
+        </p>
       </FormCard>
     </div>
   );
