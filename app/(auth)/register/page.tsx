@@ -100,8 +100,10 @@ const RegisterPage: React.FC = () => {
       <div className="mb-8 sm:mb-12">
         <TutorFlowLogo size="text-4xl sm:text-5xl" />
       </div>
-      {!preferrences ?(
-        <FormCard title="Create a new Account">
+      
+      <div>
+      <div>
+       <FormCard title="Create a new Account">
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
           {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
           <InputField
@@ -155,27 +157,7 @@ const RegisterPage: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="flex justify-center mb-4">
-            <AuthButton label="Sign Up" onClick={() => setPreferrences(true)} />
-          </div>
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <a href="/login" className="text-[#3D5A80] hover:underline">
-              Sign In
-            </a>
-          </p>
-          <br />
-          <p className="text-center text-sm text-gray-600">
-            Need to verify your email?{" "}
-            <a href="/verify-email" className="text-[#3D5A80] hover:underline">
-              Verify Email
-            </a>
-          </p>
-        </FormCard>
-      ):
-    (
-      <div>
-        <FormCard title="Select your preferences">
+          <div>
           <div className="mb-6">
             <p className="text-lg font-semibold text-gray-800 mb-6 text-center">Select the topics that interest you</p>
             <div className="flex flex-wrap justify-center gap-4 mb-6">
@@ -195,12 +177,30 @@ const RegisterPage: React.FC = () => {
             </div>
           </div>
           <div className="flex justify-center">
-            <AuthButton label="Confirm Preferences" onClick={handleSignUp} />
+            <AuthButton label="Sign up" onClick={handleSignUp} />
           </div>
-        </FormCard>
       </div>
-    )
-     }
+          <br />
+          <p className="text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <a href="/login" className="text-[#3D5A80] hover:underline">
+              Sign In
+            </a>
+          </p>
+          <br />
+          <p className="text-center text-sm text-gray-600">
+            Need to verify your email?{" "}
+            <a href="/verify-email" className="text-[#3D5A80] hover:underline">
+              Verify Email
+            </a>
+          </p>
+        </FormCard>
+       </div>
+       
+      
+      </div>
+    
+     
     </div>
   );
 };
