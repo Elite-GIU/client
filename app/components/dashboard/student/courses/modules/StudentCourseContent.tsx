@@ -154,7 +154,6 @@ const StudentCourseContent: React.FC<{
     }
 
     triggerUpdate(); 
-    console.log("triggered update");
     
   };
 

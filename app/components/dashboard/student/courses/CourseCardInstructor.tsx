@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FiEdit, FiTrash2, FiSave } from 'react-icons/fi';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Cookies from 'js-cookie'
 import Select from 'react-select';
 
 interface CourseCardProps {
@@ -15,7 +14,7 @@ interface CourseCardProps {
     instructor_id: string;
     instructor_name: string | null;
     description: string;
-    keywords: string[]; // Adding keywords
+    keywords: string[]; 
   };
   onUpdate?: (updatedCourse: {
     _id: string;

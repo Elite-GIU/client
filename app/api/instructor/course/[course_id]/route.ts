@@ -2,16 +2,15 @@
 
 import { NextResponse } from 'next/server';
 import axios from 'axios';
-import React from 'react';
-import { Params } from 'next/dist/server/request/params';
+
+interface Params {
+  course_id: string;
+}
 
 export async function GET(req: Request, context: { params: Promise<Params>}) {
   try {
-    // Await the `params` object
-
-    const {id} = await context.params;
-
-    if (!id) {
+    const {course_id} = await context.params;
+    if (!course_id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
     }
 
@@ -23,7 +22,7 @@ export async function GET(req: Request, context: { params: Promise<Params>}) {
 
     // Make the get request to the external API
     const response = await axios.get(
-      `http://localhost:3001/api/v1/instructor/courses/${id}/modules?sortOrder=asc`, 
+      `http://localhost:3001/api/v1/instructor/courses/${course_id}/modules?sortOrder=asc`, 
       {
         headers: {
           Authorization: token,
@@ -48,11 +47,10 @@ export async function GET(req: Request, context: { params: Promise<Params>}) {
   }
 }
 
-export async function PUT(req: Request, context: { params: Promise<Params> }) {
+export async function POST(req: Request, context: { params: Promise<Params> }) {
   try {
-    const {id} = await context.params;
-
-    if (!id) {
+    const {course_id} = await context.params;      
+    if (!course_id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
     }
 
@@ -63,12 +61,10 @@ export async function PUT(req: Request, context: { params: Promise<Params> }) {
     }
 
     const body = await req.json();
-
       delete body._id;
 
-      body.difficulty_level = Number(body.difficulty_level);
-      const response = await axios.put(
-          `http://localhost:3001/api/v1/instructor/courses/${id}`,
+      const response = await axios.post(
+          `http://localhost:3001/api/v1/instructor/courses/${course_id}/modules`,
           body,
           {
               headers: {
@@ -77,7 +73,7 @@ export async function PUT(req: Request, context: { params: Promise<Params> }) {
               },
           }
       );
-      if (response.status === 200) {
+      if (response.status === 201) {
           return NextResponse.json(response.data);
       }
 

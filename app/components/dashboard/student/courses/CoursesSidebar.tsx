@@ -119,7 +119,6 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     setModules(fetchedModules);
   }
   useEffect(() => {
-    console.log("updatedfrom sidebar", updated  );
     if (updated) {
         fetchModules();
         resetUpdate();
@@ -171,7 +170,11 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"
             onClick={manageModules}
           >
-            <span className="ml-6 text-black flex-1 font-bold">Manage Modules</span>
+            {role === "instructor" ? (
+              <span className="ml-6 text-black flex-1 font-bold">Manage Modules</span>
+            ) : (
+              <span className="ml-6 text-black flex-1 font-bold">Course Overview</span>
+            )}
         </li>
         <li
           className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-4"
