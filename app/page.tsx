@@ -147,7 +147,7 @@ export default function MainContent() {
       <Header />
       <main>
         <section className="flex flex-col md:flex-row items-center justify-between p-4 text-base text-slate-600">
-          <div className="flex flex-col md:w-2/3 space-y-4">
+          <div className="flex flex-col md:w-2/3 ml-10 space-y-4">
             <h1 className="text-2xl md:text-4xl font-bold">
               Start Learning Today
             </h1>
@@ -160,14 +160,14 @@ export default function MainContent() {
             </p>
             <button 
             onClick={handleViewCourses}
-            className="bg-slate-600 text-sky-100 rounded-xl px-8 py-2 w-1/2 md:w-1/4">
+            className="bg-slate-600 text-sky-100 rounded-xl px-8 py-2 w-1/4">
               Explore Courses
             </button>
           </div>
           <img
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/ac84c068cdf462ee97515a287a74b9e5ee97583d86bfd488935e51708eed3c57"
             alt="Learning illustration"
-            className="w-full md:w-1/3 max-w-xs h-auto"
+            className="w-full md:w-1/3 max-w-xs h-auto mr-20 mt-20"
           />
         </section>
 
@@ -175,7 +175,7 @@ export default function MainContent() {
           <h2 className="text-3xl font-bold text-slate-600 mb-6">
             Browse Categories
           </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-4">
             {categories.map((category, index) => (
               <CategoryButton key={index} label={category} />
             ))}
