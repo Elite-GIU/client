@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Eye, EyeOff } from 'lucide-react';
+import { useSidebarUpdate } from "@/app/components/dashboard/student/courses/SidebarContext";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -37,7 +38,8 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   }>({});
   const [isModulesExpanded, setIsModulesExpanded] = useState(false);
   const [role, setRole] = useState<string | null>(null);
-
+  const { updated, resetUpdate } = useSidebarUpdate();
+  
   async function fetchModules() {
     const token = Cookies.get("Token");
     if (!token) {
@@ -116,7 +118,14 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
     setModules(fetchedModules);
   }
-
+  useEffect(() => {
+    console.log("updatedfrom sidebar", updated  );
+    if (updated) {
+        fetchModules();
+        resetUpdate();
+    }
+  }, [updated]);
+  
   useEffect(() => {
     fetchModules();
   }, [courseId]);
@@ -153,7 +162,9 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     <div
       className={`${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 fixed h-full w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out`}
+      } lg:translate-x-0 fixed h-[calc(100vh-4rem)] w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out overflow-y-auto`}
+      // decrease it's heigh
+
     >
       <ul className="p-0 m-0">
         <li
@@ -200,42 +211,30 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                     {role === "instructor" && (
                       <li
                         onClick={() => handleCreateContentClick(module.id)}
-                        className=" text-black py-4 hover:bg-gray-100 bg-gray-50 cursor-pointer text-center"
+                        className="pl-16 text-black py-4 hover:bg-gray-100 bg-gray-50 cursor-pointer"
                       >
                         <FontAwesomeIcon icon={faPlus} /> Create Content
                       </li>
                     )}
                     {module.contents &&
                       module.contents.map((content) => (
-                        <li
-                          key={content.id}
-                          className="pl-16 text-black p-4 hover:bg-gray-100 bg-gray-50 cursor-pointer"
-                          onClick={() =>
-                            handleNavigation(
-                              `/dashboard/courses/${courseId}/modules/${module.id}/content/${content.id}`
-                            )
-                          }
-                        >
-                          <div className="flex items-center">
-                            {role === "student" ? (
-                              // If the role is student, only display the title without the eye icons
-                              <span>{content.title}</span>
-                            ) : (
-                              // If the role is not student, show the eye icon based on visibility
-                              content.isVisible ? (
-                                <span className="flex items-center">
-                                  <Eye className="text-green-500 mr-2" /> {/* Eye icon for visible */}
-                                  {content.title}
-                                </span>
-                              ) : (
-                                <span className="flex items-center text-gray-400">
-                                  <EyeOff className="text-red-500 mr-2" /> {/* Eye-off icon for not visible */}
-                                  {content.title}
-                                </span>
-                              )
-                            )}
-                          </div>
-
+                          <li
+                            key={content.id}
+                            className=" pl-12 hover:bg-gray-100 bg-gray-50 cursor-pointer flex items-center overflow-hidden break-all"
+                            onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/content/${content.id}`)}
+                          >
+                            <div className="flex-none">
+                              {role !== "student" && (
+                                content.isVisible ? (
+                                  <Eye className="text-green-500 w-5 h-5" size={20} />
+                                ) : (
+                                  <EyeOff className="text-red-500 w-5 h-5" size={20} />
+                                )
+                              )}
+                            </div>
+                            <div className="flex-1 truncate text-black p-4">
+                              {content.title} {/* Content title is now in its own div with truncation */}
+                            </div>
                         </li>
                       ))}
 
@@ -269,7 +268,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </ul>
         )}
         <li
-          className="flex items-center cursor-pointer hover:bg-gray-300 bg-gray-200 w-full p-6 pl-4"
+          className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-6 pl-4"
           onClick={() =>
             handleNavigation(`/dashboard/courses/${courseId}/threads`)
           }
@@ -277,7 +276,7 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           <span className="ml-6 text-black">Threads</span>
         </li>
         <li
-          className="flex items-center cursor-pointer hover:bg-gray-300 bg-gray-200 w-full p-6 pl-4"
+          className="flex items-center cursor-pointer hover:bg-gray-400 bg-gray-300 w-full p-6 pl-4"
           onClick={() =>
             handleNavigation(`/dashboard/courses/${courseId}/rooms`)
           }

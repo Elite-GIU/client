@@ -8,6 +8,7 @@ import CourseSidebar from '../components/dashboard/student/courses/CoursesSideba
 import { FaHome, FaBook, FaQuestionCircle, FaUserAlt } from 'react-icons/fa';
 import Cookies from 'js-cookie';
 import Loading from '../loading';
+import { SidebarProvider } from '../components/dashboard/student/courses/SidebarContext';
 
 const studentSidebarItems = [
   { name: 'Dashboard', icon: <FaHome />, href: "/dashboard" },
@@ -36,8 +37,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
       router.push('/login');
       return;
     }
-
-    
 
     const fetchRole = async () => {
       try {
@@ -83,6 +82,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const isCoursePage = pathname.includes('/dashboard/courses/') && !pathname.endsWith('/dashboard/courses');
 
   return (
+    <SidebarProvider>
     <div className="flex flex-col h-screen">
       <DashboardHeader toggleSidebar={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       <div className="flex flex-1 overflow-hidden">
@@ -94,6 +94,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </main>
       </div>
     </div>
+    </SidebarProvider>
   );
 }
 

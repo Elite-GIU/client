@@ -4,6 +4,7 @@ import { CourseHeader } from "./content/CourseHeader";
 import { ContentDetails } from "./content/ContentDetails";
 import Cookies from "js-cookie";
 import RenderContent from "./content/RenderContent";
+import { useSidebarUpdate } from "@/app/components/dashboard/student/courses/SidebarContext";
 
 interface ContentDetails {
   _id: string;
@@ -26,6 +27,7 @@ const StudentCourseContent: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
+  const { triggerUpdate } = useSidebarUpdate();
   const [content, setContent] = useState<ContentDetails>({
     _id: "",
     title: "",
@@ -100,6 +102,7 @@ const StudentCourseContent: React.FC<{
     if (!validateInputs()) {
       return;
     }
+    
 
     // Form data to send along with the file
     const formData = new FormData();
@@ -149,6 +152,10 @@ const StudentCourseContent: React.FC<{
       console.error("Error updating content:", error);
       setErrorMessage("An unexpected error occurred.");
     }
+
+    triggerUpdate(); 
+    console.log("triggered update");
+    
   };
 
   const handleCancel = () => {
@@ -219,7 +226,7 @@ const StudentCourseContent: React.FC<{
         <div className="self-start mt-14 text-3xl font-bold tracking-tighter leading-tight text-black max-md:mt-10 max-md:ml-2">
           Description
         </div>
-        <div className="flex flex-col items-start pt-8 pr-20 pb-16 pl-9 mt-7 mb-0 bg-white rounded-2xl shadow-[0px_1px_17px_rgba(0,0,0,0.25)] max-md:px-5 max-md:mr-1.5 max-md:mb-2.5 max-md:max-w-full">
+        <div className="flex flex-col items-start pt-8 pr-20 pb-16 pl-9 mt-7 mb-0 bg-white rounded-2xl shadow-[0px_1px_17px_rgba(0,0,0,0.25)] max-md:px-5 max-md:mr-1.5 max-md:mb-2.5 max-md:max-w-full break-all">
           <ContentDetails
             description={
               isEditing ? (

@@ -7,6 +7,7 @@ import { Upload, AlertCircle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Image from "next/image";
+import { useSidebarUpdate } from "@/app/components/dashboard/student/courses/SidebarContext";
 const CreateContent = () => {
   const router = useRouter();
   const params = useParams();
@@ -14,6 +15,7 @@ const CreateContent = () => {
   const [role, setRole] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { triggerUpdate } = useSidebarUpdate();  // Corrected use of useSidebarUpdate
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -35,8 +37,12 @@ const CreateContent = () => {
           setPreviewUrl(null);
         }
       }
+      
     },
+    
     []
+
+
   );
   const handleRemoveFile = useCallback(() => {
     setFile(null);
@@ -139,6 +145,7 @@ const CreateContent = () => {
           `/dashboard/courses/${course_id}/modules/${module_id}/content/${contentId}`
         );
         setErrorMessage(null);
+        triggerUpdate();
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || "Failed to update content.");

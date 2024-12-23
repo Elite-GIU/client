@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie'
+import { useSidebarUpdate } from '@/app/components/dashboard/student/courses/SidebarContext';
 
 interface Module {
    title: string;
@@ -18,6 +19,7 @@ const InstructorCourse =  (props: any) => {
     const [error, setError] = useState<string | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [showEdit, setShowEdit] = useState(false);
+    const { triggerUpdate } = useSidebarUpdate();
     const [formData, setFormData] = useState({
         title: '',
         nrOfQuestions: 0,
@@ -91,12 +93,9 @@ const InstructorCourse =  (props: any) => {
             });
 
             if(response.ok){
-
-                alert('Module added successfully! Refresh the page to see the result');
-
+                triggerUpdate();
             }else {
                 const reason = await response.json();
-
                 alert('Error submitting Form! : ' + reason.error.message)
             }
         }catch(error){
@@ -107,9 +106,7 @@ const InstructorCourse =  (props: any) => {
     }
 
     const handleUpdate = async (e: any) => {
-
         e.preventDefault();
-
         try {
 
             const token = Cookies.get('Token');
@@ -120,9 +117,7 @@ const InstructorCourse =  (props: any) => {
             });
 
             if(response.ok){
-
-                alert('Module updated successfully! Refresh the page to see the result');
-
+                triggerUpdate();
             }else {
 
                 const reason = await response.json();
