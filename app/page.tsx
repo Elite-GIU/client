@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"; // for redirect
 import { CategoryButton } from "./components/CategoryButton";
 import Header from "./components/Header";
 import Cookies from "js-cookie";
+import Loading from "./loading";
+
 interface Course {
   _id: string;
   title: string;
@@ -132,6 +134,10 @@ const fetchCourses = async () => {
     return null;
 };
 
+if (isLoading) {
+  return <Loading />;
+}
+
   return (
     <div>
       <div>
@@ -189,7 +195,7 @@ const fetchCourses = async () => {
             <section className="mx-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-8 py-8">
               {isLoading ? (
                 <div className="text-black col-span-full flex justify-center items-center h-full">
-                  <p>Loading...</p> {/* Or add a spinner here */}
+                  <Loading />
                 </div>
               ) : (
                 courses.map((course) => (
@@ -212,18 +218,6 @@ const fetchCourses = async () => {
             </section>
 
         </main>
-
-        <footer className="flex gap-2.5 items-center w-full text-center text-black min-h-[96px] max-md:max-w-full">
-          <div className="flex overflow-hidden relative flex-wrap flex-1 shrink gap-4 items-start self-stretch my-auto w-full border-t basis-0 bg-zinc-100 border-zinc-300 min-h-[96px] min-w-[240px] max-md:max-w-full">
-            <div className="absolute z-0 text-xs leading-8 bottom-[21px] h-[31px] left-[650px] w-[263px]">
-              Copyright © 2024 tutorFlow. All rights reserved.
-            </div>
-            <div className="absolute z-0 h-8 text-base font-bold tracking-tight leading-5 left-[620px] top-[23px] w-[327px]">
-              <span className="text-slate-600">tutor</span>
-              <span className="text-slate-300">Flow</span>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

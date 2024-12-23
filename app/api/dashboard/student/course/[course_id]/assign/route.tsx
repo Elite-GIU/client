@@ -9,8 +9,9 @@ interface Params {
 
 export async function POST(req: Request, context: { params: Params }) {
   try {
-    // Await the `params` object
-    const { course_id } = context.params;
+
+    console.log('POST /api/dashboard/student/course/[course_id]/assign');
+    const { course_id } = await context.params;
 
     if (!course_id) {
       return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
@@ -33,7 +34,9 @@ export async function POST(req: Request, context: { params: Params }) {
       }
     );
 
-    if (response.status === 200) {
+    console.log('POST /api/dashboard/student/course/[course_id]/assign response', response);
+
+    if (response.status === 201) {
       return NextResponse.json({ message: 'Successfully enrolled in the course' });
     }
 
