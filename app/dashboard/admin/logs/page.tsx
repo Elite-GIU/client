@@ -1,97 +1,90 @@
-'use client';
+  'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { DataGrid } from '@mui/x-data-grid';
-import { Box, Typography, Paper, Toolbar, AppBar, Button } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-interface Log {
-  user_id?: string;
-  event: string;
-  timestamp: string;
-  status: number;
-  type: 'auth' | 'general';
-}
+  import React, { useState, useEffect } from 'react';
+  import { useRouter } from 'next/navigation';
+  import Cookies from 'js-cookie';
 
-const LogsPage = () => {
-  const [logs, setLogs] = useState<Log[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const fetchLogs = async () => {
-      const token = Cookies.get('Token');
-      if (!token) {
-        router.push('/login');
-        return;
-      }
-
-      try {
-        const response = await fetch('/api/admin/logs', {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.error(response);
-        console.log(response.ok);
-        console.log(response.status);
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          setLogs(data || []);
-        } else {
-          console.error('Failed to fetch logs:', response);
-        }
-      } catch (error) {
-        console.log(error);
-        console.error('Error fetching logs:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLogs();
-  }, [router]);
-
-  if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+  interface Log {
+    user_id?: string;
+    event: string;
+    timestamp: string;
+    status: number;
+    type: 'auth' | 'general';
   }
 
-  return (
-    <Box sx={{ height: '100vh', bgcolor: '#f5f5f5', padding: 2 }}>
-      <AppBar position="static" color="primary">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Admin Logs
-          </Typography>
-          <Button color="inherit" startIcon={<RefreshIcon />} onClick={handleRefresh}>
-            Refresh
-          </Button>
-        </Toolbar>
-      </AppBar>
+  const LogsPage = () => {
+    const [logs, setLogs] = useState<Log[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
-      <Paper elevation={3} sx={{ marginTop: 4, padding: 2 }}>
-        <Typography variant="h5" gutterBottom>
-          System Logs
-        </Typography>
+    useEffect(() => {
+      const fetchLogs = async () => {
+        const token = Cookies.get('Token');
+        if (!token) {
+          router.push('/login');
+          return;
+        }
 
-        {logs && logs.length > 0 ? (
-          <div style={{ height: 400, width: '100%' }}>
-            <DataGrid
-              rows={logs}
-              columns={columns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10, 20]}
-              disableSelectionOnClick
-              sx={{ bgcolor: 'white' }}
-            />
-          </div>
-        ) : (
-          <Typography variant="body1">No logs available.</Typography>
-        )}
-      </Paper>
-    </Box>
-  );
-};
+        try {
+          const response = await fetch('/api/admin/logs', {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setLogs(data || []);
+          } else {
+            console.error('Failed to fetch logs:', response);
+          }
+        } catch (error) {
+          console.log(error);
+          console.error('Error fetching logs:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-export default LogsPage;
+      fetchLogs();
+    }, [router]);
+
+    if (isLoading) {
+      return <div>Loading...</div>; // Show a loading state
+    }
+
+    return (
+      <div className="font-sans p-5 bg-gray-100 min-h-screen">
+        <main className="bg-white p-5 rounded-lg shadow-md">
+          <h2 className="mb-5 text-black">System Logs</h2>
+
+          {logs && logs.length > 0 ? (
+            <table className="w-full border-collapse text-black">
+              <thead>
+                <tr className="bg-gray-200 text-left">
+                  <th className="p-2 border border-gray-300">Event</th>
+                  <th className="p-2 border border-gray-300">Timestamp</th>
+                  <th className="p-2 border border-gray-300">Status</th>
+                  <th className="p-2 border border-gray-300">Type</th>
+                  <th className="p-2 border border-gray-300">User Id</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log, index) => (
+                  <tr key={index} className={log.status === 200 ? 'bg-gray-200' : 'bg-red-100'}>
+                    <td className="p-2 border border-gray-300">{log.event}</td>
+                    <td className="p-2 border border-gray-300">{log.timestamp}</td>
+                    <td className="p-2 border border-gray-300">{log.status}</td>
+                    <td className="p-2 border border-gray-300">{log.type}</td>
+                    <td className="p-2 border border-gray-300">{log.user_id}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="text-gray-600">No logs available.</p>
+          )}
+        </main>
+      </div>
+    );
+  };
+
+  export default LogsPage;
