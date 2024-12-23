@@ -70,6 +70,7 @@ const InstructorCourse = (props: any) => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        
         setCourse((prev) =>
           prev.map((module) =>
             module._id === formData.moduleId ? { ...module, ...formData } : module
@@ -90,6 +91,7 @@ const InstructorCourse = (props: any) => {
           }
         );
 
+        console.log('response', response.data);
         const newData = {
           title: response.data.newModule.title,
           nrOfQuestions: response.data.newModule.numberOfQuestions,
