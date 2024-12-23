@@ -122,7 +122,7 @@ const StartQuiz = () => {
               <QuizCard
                 title={moduleDetails.title}
                 questionCount={moduleDetails.numberOfQuestions}
-                quizType={moduleDetails.assessmentType === 'mcq' ? 'Multiple Choice' : 'True/False'}
+                quizType={moduleDetails.assessmentType === 'mcq' ? 'Multiple Choice' : (moduleDetails.assessmentType === 'true_false' ? 'True/False' : 'Mix')}
                 onStart={handleStartQuiz}
               />
             </div>

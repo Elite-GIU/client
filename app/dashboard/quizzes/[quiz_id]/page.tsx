@@ -93,7 +93,7 @@ const QuizFeedback = () => {
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">Quiz Results</h1>
                     <div className="text-lg text-gray-600 mb-4">Score: {feedback.score}%</div>
                     <div className={`text-lg font-medium mb-6 ${
-                        feedback.score >= 50 ? 'text-green-600' : 'text-red-600'
+                        feedback.message === 'You passed the quiz, well done!' ? 'text-green-600' : 'text-red-600'
                     }`}>
                         {feedback.message}
                     </div>
@@ -137,10 +137,10 @@ const QuizFeedback = () => {
 
                 <div className="mt-8 flex justify-center">
                     <button
-                        onClick={() => router.back()}
+                        onClick={() => router.push('/dashboard/quizzes')}
                         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        Back to Quizzes
+                        View All Quizzes
                     </button>
                 </div>
             </div>

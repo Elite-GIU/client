@@ -205,10 +205,10 @@ const Quiz: React.FC = () => {
                         </div>
                     )}
                     <button 
-                        onClick={() => router.push(`/dashboard/courses/${courseId}`)}
+                        onClick={() => router.push(`/dashboard/quizzes/${quizResponseId}`)}
                         className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                        Return to Course
+                        View Feedback
                     </button>
                 </div>
             </div>
