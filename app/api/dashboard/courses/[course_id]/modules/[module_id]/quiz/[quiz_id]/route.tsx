@@ -54,13 +54,7 @@ export async function POST(req: Request, context: { params: Params }) {
 
 export async function GET(req: Request, context: { params: Params }) {
     try {
-        const { course_id, module_id, quiz_id } = await context.params
-        if (!course_id) {
-            return NextResponse.json({ error: 'Course ID is required' }, { status: 400 })
-        }
-        if (!module_id) {
-            return NextResponse.json({ error: 'Module ID is required' }, { status: 400 })
-        }
+        const { quiz_id }  = await context.params
         if (!quiz_id) {
             return NextResponse.json({ error: 'Quiz ID is required' }, { status: 400 })
         }
@@ -70,7 +64,7 @@ export async function GET(req: Request, context: { params: Params }) {
         }
 
         const response = await axios.get(
-            `http://localhost:3001/api/v1/student/courses/${course_id}/modules/${module_id}/quiz/${quiz_id}/feedback`,
+            `http://localhost:3001/api/v1/student/quiz/${quiz_id}/feedback`,
             {
                 headers: {
                     Authorization: token,

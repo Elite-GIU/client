@@ -36,12 +36,10 @@ const Quiz: React.FC = () => {
     const router = useRouter();
     const params = useParams();
     
-    console.log('Page Component Params:', params);
     
     const courseId = params.course_id as string;
     const moduleId = params.module_id as string;
     
-    console.log('Extracted IDs:', { courseId, moduleId });
 
     const [questionIds, setQuestionIds] = useState<string[]>([]);
     const [questions, setQuestions] = useState<string[]>([]);
@@ -61,6 +59,7 @@ const Quiz: React.FC = () => {
                 setIsLoading(false);
                 return;
             }
+            console.log('Fetching quiz...');
 
             try {
                 const token = Cookies.get('Token');
@@ -69,13 +68,13 @@ const Quiz: React.FC = () => {
                         headers: { Authorization: `Bearer ${token}` },
                     }
                 );
+                console.log('Response:', response);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch quiz');
                 }
 
                 const data: QuizResponse = await response.json();
-                console.log('Quiz Response:', data);
                 
                 if (data.quizResponse?.questions && Array.isArray(data.quizResponse.questions)) {
                     setQuestionIds(data.quizResponse.questions);
@@ -83,6 +82,7 @@ const Quiz: React.FC = () => {
                     setAllChoices(data.choices || []);
                     setAnswers(new Array(data.quizResponse.questions.length).fill(''));
                     setQuizResponseId(data.quizResponse._id);
+                    console.log("Hello");
                 } else {
                     setError('Invalid quiz data format');
                 }

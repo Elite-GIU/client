@@ -10,8 +10,7 @@ interface Params {
 
 export async function GET(req: Request, context: { params: Params }) {
     try {
-        const { course_id, module_id } = context.params;
-        console.log('Route Handler Params:', { course_id, module_id });
+        const { course_id, module_id } = await context.params;
         
         if (!course_id) {
             return NextResponse.json({ error: 'Course ID is required' }, { status: 400 })
@@ -29,7 +28,6 @@ export async function GET(req: Request, context: { params: Params }) {
             headers: { Authorization: token }
         });
 
-        console.log('Backend Response:', response.data);
         
         if (response.status === 200) {
             return NextResponse.json(response.data);
