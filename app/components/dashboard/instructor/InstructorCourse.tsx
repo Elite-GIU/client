@@ -104,7 +104,6 @@ const InstructorCourse = (props: any) => {
       setShowModal(false);
       triggerUpdate();
     } catch (error) {
-      console.error('Error saving module:', error);
       alert('Failed to save module.');
     }
   };
@@ -131,7 +130,6 @@ const InstructorCourse = (props: any) => {
       setCourse((prev) => prev.filter((module) => module._id !== moduleId));
     triggerUpdate();
     } catch (error) {
-      console.error('Error deleting module:', error);
       alert('Failed to delete module.');
     }
   };
