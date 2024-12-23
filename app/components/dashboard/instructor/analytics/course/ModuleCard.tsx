@@ -43,20 +43,20 @@ const ModuleCard: React.FC<ModuleCardProps> = ({
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-600">Average Grade:</span>
-          <span className="font-medium text-gray-900">{averageGrade.toFixed(2)}%</span>
+          <span className="font-medium text-gray-900">{averageGrade?averageGrade.toFixed(2):0}%</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Best Grade:</span>
-          <span className="font-medium text-gray-900">{bestGrade}%</span>
+          <span className="font-medium text-gray-900">{bestGrade?bestGrade.toFixed(2):0}%</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Lowest Grade:</span>
-          <span className="font-medium text-gray-900">{lowestGrade}%</span>
+          <span className="font-medium text-gray-900">{lowestGrade?lowestGrade.toFixed(2):0}%</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-gray-600">Average Rating:</span>
           <div className="flex items-center space-x-2">
-            <span className="font-medium text-gray-900">{averageRating.toFixed(1)}/5</span>
+            <span className="font-medium text-gray-900">{averageRating?averageRating.toFixed(1):0}/5</span>
             {renderStars(averageRating)}
           </div>
         </div>
