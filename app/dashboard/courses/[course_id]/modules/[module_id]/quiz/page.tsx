@@ -87,8 +87,8 @@ const Quiz: React.FC = () => {
                     setError('Invalid quiz data format');
                 }
             } catch (error) {
-                console.error('Error fetching quiz:', error);
-                setError('Failed to load quiz');
+                // console.error('Error fetching quiz:', error);
+                setError(error+"");
             } finally {
                 setIsLoading(false);
             }
