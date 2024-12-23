@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-
+import { DataGrid } from '@mui/x-data-grid';
+import { Box, Typography, Paper, Toolbar, AppBar, Button } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 interface Log {
   user_id?: string;
   event: string;
@@ -56,18 +58,39 @@ const LogsPage = () => {
   }
 
   return (
-    <div>
-      <h1>Logs</h1>
-      {logs && logs.length > 0 ? (
-        <ul>
-          {logs.map((log, index) => (
-            <li key={index}>{JSON.stringify(log)}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No logs available.</p>
-      )}
-    </div>
+    <Box sx={{ height: '100vh', bgcolor: '#f5f5f5', padding: 2 }}>
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Admin Logs
+          </Typography>
+          <Button color="inherit" startIcon={<RefreshIcon />} onClick={handleRefresh}>
+            Refresh
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Paper elevation={3} sx={{ marginTop: 4, padding: 2 }}>
+        <Typography variant="h5" gutterBottom>
+          System Logs
+        </Typography>
+
+        {logs && logs.length > 0 ? (
+          <div style={{ height: 400, width: '100%' }}>
+            <DataGrid
+              rows={logs}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5, 10, 20]}
+              disableSelectionOnClick
+              sx={{ bgcolor: 'white' }}
+            />
+          </div>
+        ) : (
+          <Typography variant="body1">No logs available.</Typography>
+        )}
+      </Paper>
+    </Box>
   );
 };
 
