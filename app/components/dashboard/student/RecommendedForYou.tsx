@@ -71,7 +71,7 @@ const RecommendedForYou = ({ onEnroll }: { onEnroll: () => void }) => {
   const handleEnroll = async (courseId: string) => {
     const token = Cookies.get('Token');
     try {
-      const response = await fetch(`/api/dashboard/student/${courseId}/assign`, {
+      const response = await fetch(`/api/dashboard/student/course/${courseId}/assign`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
