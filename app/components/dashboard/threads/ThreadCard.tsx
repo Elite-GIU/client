@@ -17,9 +17,9 @@ interface ThreadCardProps {
     description: string;
     messagesCount: number;
   };
-  onUpdate?: (updatedTitle: string, updatedDescription: string) => void; // Optional function to handle update
-  onDelete?: () => void; // Optional function to handle delete
-  role: string,
+  onUpdate?: (updatedTitle: string, updatedDescription: string) => void;
+  onDelete?: () => void;
+  role?: string,
 }
 
 const ThreadCard: React.FC<ThreadCardProps> = ({ thread, onUpdate, onDelete, role }) => {
