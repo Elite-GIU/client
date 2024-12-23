@@ -25,7 +25,7 @@ const categories = [
 ];
 
 export default function MainContent() {
-  const [courses, setCourses] = useState<any[]>([]); // Adjusted type
+  const [courses, setCourses] = useState<any[]>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,8 +89,27 @@ const fetchCourses = async () => {
 };
 
   useEffect(() => {
+    const checkAllowed = async () => {
+      const token = Cookies.get('Token');
+      if (!token) {
+        router.push('/');
+        return;
+      }
+
+      const response = await fetch('/api/auth/get-active-session', {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const session = await response.json();
+      if (session != token) {
+        Cookies.remove('Token');
+        router.push('/');
+        return;
+      }    
+    };
+    checkAllowed();
     fetchCourses();
-    //setCourses(courses.slice(0, 6)); // Get the first 6 courses
     }, []);
 
   // Handler for View All Courses button

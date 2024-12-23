@@ -37,9 +37,23 @@ const Layout = ({ children }: { children: ReactNode }) => {
       return;
     }
 
+    
+
     const fetchRole = async () => {
       try {
-        const response = await fetch('/api/profile/role', {
+        let response;
+        response = await fetch('/api/auth/get-active-session', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        const session = await response.json();
+        if (session != token) {
+          Cookies.remove('Token');
+          router.push('/login');
+          return;
+        }
+         response = await fetch('/api/profile/role', {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${token}` }
         });
