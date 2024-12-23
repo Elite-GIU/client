@@ -49,7 +49,7 @@ const InstructorCourse = (props: any) => {
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: name === 'nrOfQuestions' || name === 'passingGrade' ? parseInt(value) : value });
+    setFormData({ ...formData, [name]: name === 'nrOfQuestions' || name === 'passingGrade' ? parseInt(value) + 0 : value });
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -245,8 +245,8 @@ const InstructorCourse = (props: any) => {
                   required
                 >
                   <option value="mcq">Multiple Choice</option>
-                  <option value="project">Project</option>
-                  <option value="essay">Essay</option>
+                  <option value="true_false">True or False</option>
+                  <option value="mix">Mix</option>
                 </select>
               </div>
               <div>
