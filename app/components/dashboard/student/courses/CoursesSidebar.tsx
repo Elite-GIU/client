@@ -254,12 +254,8 @@ const CourseSidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                       </li>
                     ) : (
                       <li
-                        className="pl-16 p-4 text-black font-bold hover:bg-gray-100 bg-gray-50 cursor-pointer"
-                        onClick={() =>
-                          handleNavigation(
-                            `/dashboard/courses/${courseId}/modules/${module.id}/quiz`
-                          )
-                        }
+                        className="pl-16 p-4 text-black hover:bg-gray-100 bg-gray-50 cursor-pointer"
+                        onClick={() => handleNavigation(`/dashboard/courses/${courseId}/modules/${module.id}/quiz/start`)}
                       >
                         Quiz
                       </li>

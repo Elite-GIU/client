@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useRouter } from 'next/navigation';
 
 interface Quiz {
     quizId: string;
@@ -15,6 +16,7 @@ export const QuizProgress: React.FC<Quiz> = ({
   moduleName,
   finalGrade
 }) => {
+  const router = useRouter();
   return (
     <>
         <div className="border border-gray-200 rounded-lg p-6 mx-auto">
@@ -42,7 +44,7 @@ export const QuizProgress: React.FC<Quiz> = ({
                 </div>
                 <button 
                 className="my-auto text-sky-600 basis-auto"
-                tabIndex={0}
+                onClick={() => router.push(`/dashboard/quizzes/${quizId}`)}
                 >
                 View Details...
                 </button>
