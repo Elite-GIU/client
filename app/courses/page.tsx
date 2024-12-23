@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Header from "../components/Header";
 import Loading from "../loading";
+import { useRouter } from "next/navigation";
 
 interface Course {
     _id: string;
@@ -25,6 +26,7 @@ const CoursesPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [notification, setNotification] = useState<string | null>(null); // Notification state
+    const router = useRouter();
 
     const fetchInstructorName = async (instructorId: string): Promise<string | null> => {
         try {
@@ -82,6 +84,11 @@ const CoursesPage = () => {
     const enrollInCourse = async (courseId: string) => {
         try {
             const token = Cookies.get("Token");
+            if (!token) {
+                router.push("/login");
+                return;
+            }
+
             const response = await fetch(`/api/dashboard/student/course/${courseId}/assign`, {
                 method: "POST",
                 headers: {
@@ -251,6 +258,17 @@ const CoursesPage = () => {
                     </button>
                 </div>
             </div>
+            <footer className="flex gap-2.5 items-center w-full text-center text-black min-h-[96px] max-md:max-w-full">
+                <div className="flex overflow-hidden relative flex-wrap flex-1 shrink gap-4 items-start self-stretch my-auto w-full border-t basis-0 bg-zinc-100 border-zinc-300 min-h-[96px] min-w-[240px] max-md:max-w-full">
+                    <div className="absolute z-0 text-xs leading-8 bottom-[21px] h-[31px] left-[650px] w-[263px]">
+                    Copyright © 2024 tutorFlow. All rights reserved.
+                    </div>
+                    <div className="absolute z-0 h-8 text-base font-bold tracking-tight leading-5 left-[620px] top-[23px] w-[327px]">
+                    <span className="text-slate-600">tutor</span>
+                    <span className="text-slate-300">Flow</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };

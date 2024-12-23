@@ -1,16 +1,21 @@
-
 import * as React from 'react';
 
 export interface CategoryButtonProps {
     label: string;
-  }
+}
 
 export const CategoryButton: React.FC<CategoryButtonProps> = ({ label }) => {
   return (
-<div className="text-center gap-2 self-stretch px-2 py-3.5 whitespace-nowrap rounded-xl bg-blue-100 h-[43px] min-h-[43px] w-[195px] shadow-lg">
-  {label}
-</div>
-
-
+    <div className="text-center self-stretch text-white rounded-xl shadow-lg px-4 py-2"
+         style={{
+           backgroundColor: '#3D5A80',
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           height: '43px',
+           width: '195px'  // Setting a fixed width
+         }}>
+      {label}
+    </div>
   );
 };

@@ -145,24 +145,29 @@ if (isLoading) {
       </div>
       <div>
         <main>
-          <section className="flex relative gap-2.5 items-start text-base min-h-[315px] text-slate-600 max-md:max-w-full">
-          <div className="flex absolute z-[0] shrink-0 bg-blue-300 bg-opacity-20 bottom-[15px] h-[280px] min-w-[240px] left-10 right-10 rounded-[33px] w-auto" />
-            <div className="absolute z-0 font-semibold tracking-normal leading-5 h-[95px] left-[134px] top-[106px] w-[619px] max-md:max-w-full">
-              Transform the way you engage with tutorials. Access interactive learning sessions, solve programming problems, and refine your skills with instant feedback on your submissions. Whether you're a TA managing classes or a student aiming for excellence, we're here to make the process smoother and more effective.
-            </div>
-            <h1 className="absolute z-0 h-12 text-4xl tracking-wide leading-tight left-[134px] top-[52px] w-[622px] max-md:max-w-full">
-              Start Learning Today
-            </h1>
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/ac84c068cdf462ee97515a287a74b9e5ee97583d86bfd488935e51708eed3c57?placeholderIfAbsent=true&apiKey=243f119144084a878d11ef416bccfde3"
-              alt="Learning illustration"
-              className="object-contain absolute z-0 shrink-0 aspect-[0.96] bottom-[59px] h-[193px] right-[123px] w-[186px]"
-            />
-            <button className="absolute gap-2 self-stretch p-2 leading-none text-sky-100 rounded-xl bg-slate-600 bottom-[63px] left-[134px] w-[150px]">
-              Explore Courses
-            </button>
-          </section>
+        <section className="flex flex-col md:flex-row items-center px-16 justify-center p-4 text-base text-slate-600 max-w-full mx-auto">
+<div className="bg-blue-300 bg-opacity-20 rounded-[33px] w-full p overflow-hidden">
+  <div className="flex flex-col md:flex-row items-center justify-between p-4 md:p-8">
+    <div className="w-full md:w-2/3 px-4 md:px-8">
+      <h1 className="text-2xl md:text-4xl font-bold mb-4">
+        Start Learning Today
+      </h1>
+      <p className="text-sm md:text-base mb-4">
+        Transform the way you engage with tutorials. Access interactive learning sessions, solve programming problems, and refine your skills with instant feedback on your submissions. Whether you're a TA managing classes or a student aiming for excellence, we're here to make the process smoother and more effective.
+      </p>
+      <button className="bg-slate-600 text-sky-100 rounded-xl px-8 py-2 w-full md:w-auto">
+        Explore Courses
+      </button>
+    </div>
+    <img
+      src="https://cdn.builder.io/api/v1/image/assets/TEMP/ac84c068cdf462ee97515a287a74b9e5ee97583d86bfd488935e51708eed3c57?placeholderIfAbsent=true&apiKey=243f119144084a878d11ef416bccfde3"
+      alt="Learning illustration"
+      className="w-1/2 md:w-1/3 max-w-xs md:max-w-md h-auto my-4 md:my-0"
+      style={ { maxWidth: '300px' } }
+    />
+  </div>
+</div>
+</section>
 
           <section className="mx-10 flex relative gap-5 items-start w-full leading-none min-h-[120px] max-md:max-w-full">
             <h2 className="absolute gap-5 top-3 z-0 h-7 text-3xl font-bold left-[29px] text-slate-600 w-[303px]">
@@ -222,5 +227,4 @@ if (isLoading) {
     </div>
   );
 }
-
 
