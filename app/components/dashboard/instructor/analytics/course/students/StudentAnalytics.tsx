@@ -5,6 +5,8 @@ import Cookies from 'js-cookie';
 import StudentCard from './StudentCard';
 import { Params } from 'next/dist/server/request/params';
 import Pagination from '@/app/components/Pagination';
+import Loading from '@/app/dashboard/courses/[course_id]/threads/loading';
+import { PlusCircle } from 'lucide-react';
 
 interface StudentAnalytics {
   studentId: string;
@@ -55,7 +57,7 @@ const StudentAnalyticsComponent: React.FC<Props> = ({ courseId }) => {
   }, [courseId, currentPage, searchName]);
 
   if (isLoading) {
-    return <div className="text-black">Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -88,7 +90,7 @@ const StudentAnalyticsComponent: React.FC<Props> = ({ courseId }) => {
   return (
     <div className="bg-white shadow-lg rounded-lg p-12 mb-8">
       <h1 className="text-3xl font-semibold mb-6 text-black">My Students Analytics</h1>
-      <div>
+      <div className="grid grid-cols-2 text-black">
       <input
           type="text"
           value={searchName}
@@ -96,6 +98,14 @@ const StudentAnalyticsComponent: React.FC<Props> = ({ courseId }) => {
           placeholder="Search by student name"
           className="p-2 border rounded mb-4"
         />
+        <div className="justify-end">
+          <button
+          className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+          >
+            <PlusCircle className="mr-2 w-5 h-5" />
+            Assign a new student
+          </button>
+        </div>
       </div>
       <div className="space-y-4">
         {students.map((student, index) => (

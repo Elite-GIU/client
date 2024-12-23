@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import StudentAnalyticsComponent from '@/app/components/dashboard/instructor/analytics/course/students/StudentAnalytics';
 import Pagination from '@/app/components/Pagination';
+import Loading from '@/app/dashboard/courses/[course_id]/threads/loading';
 
 
 const StudentAnalyticsPage = () => {
@@ -45,7 +46,7 @@ const StudentAnalyticsPage = () => {
   }, [router]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   const courseId = typeof course_id === 'string' ? course_id : '';

@@ -51,7 +51,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                 </Link>
                 <Link href={`/dashboard/analytics/${id}/students`}>
                     <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
-                      View Students
+                      View & Add Students
                     </button>
                 </Link>
               </div>
