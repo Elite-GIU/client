@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Loading from "./loading";
 import Link from "next/link";
 import { ThreadForm } from "../../../../components/dashboard/threads/ThreadForm";
-import ThreadCard  from "../../../../components/dashboard/threads/ThreadCard";
+import ThreadCard from "../../../../components/dashboard/threads/ThreadCard";
 
 interface Threads {
   _id: string;
@@ -23,9 +23,11 @@ interface Threads {
 
 function ThreadsPage() {
   const [threads, setThreads] = useState<Threads[]>([]);
+  const [filteredThreads, setFilteredThreads] = useState<Threads[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isNewThread, setIsNewThread] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
   const { course_id } = useParams();
@@ -50,10 +52,12 @@ function ThreadsPage() {
           throw new Error(`Error: ${response.statusText}`);
         }
         const { data } = await response.json();
-        setThreads(data.map((thread: Threads) => ({
+        const threadsWithFallback = data.map((thread: Threads) => ({
           ...thread,
-          creator_id: thread.creator_id || { _id: '', name: 'Unknown', role: 'User' }, 
-        })));
+          creator_id: thread.creator_id || { _id: '', name: 'Unknown', role: 'User' },
+        }));
+        setThreads(threadsWithFallback);
+        setFilteredThreads(threadsWithFallback);
       } catch (error) {
         console.error("Error fetching threads:", error);
         setError("Failed to load threads. Please try again later.");
@@ -64,6 +68,16 @@ function ThreadsPage() {
 
     fetchThreads();
   }, [course_id, router]);
+
+  useEffect(() => {
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    setFilteredThreads(
+      threads.filter((thread) =>
+        thread.title.toLowerCase().includes(lowerCaseQuery) ||
+        thread.description.toLowerCase().includes(lowerCaseQuery)
+      )
+    );
+  }, [searchQuery, threads]);
 
   if (isLoading) {
     return <Loading />;
@@ -123,15 +137,26 @@ function ThreadsPage() {
 
         <button onClick={() => setIsNewThread(true)}
           className="w-[150px] h-[44px] bg-[#98C1D9] text-white text-[16px] font-medium flex items-center justify-center rounded-[12px] shadow-md"
-          >
+        >
           New Thread
         </button>
       </div>
-      {isNewThread && (
-        <ThreadForm onSubmit={handleNewThread} />
-      )}
+
+      {/* Search Bar */}
+      <div className="px-4 mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search threads..."
+          className="w-full p-3 text-sm border rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-400 shadow"
+        />
+      </div>
+
+      {isNewThread && <ThreadForm onSubmit={handleNewThread} />}
+
       <div className="space-y-4 sm:space-y-6 p-4">
-        {threads.map((thread) => (
+        {filteredThreads.map((thread) => (
           <Link key={thread._id} href={`/dashboard/courses/${course_id}/threads/${thread._id}`} legacyBehavior>
             <a className="block">
               <ThreadCard thread={thread} />

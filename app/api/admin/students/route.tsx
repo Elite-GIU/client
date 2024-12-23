@@ -7,7 +7,7 @@ export async function GET(req: Request) {
     try {
         const url = new URL(req.url);
         const page = Number(url.searchParams.get('page')) || 1; // Default to page 1 if not provided
-        const limit = Number(url.searchParams.get('limit')) || 2; // Default to 10 items per page if not provided
+        const limit = Number(url.searchParams.get('limit')) || 12; // Default to 10 items per page if not provided
         const name = url.searchParams.get('name');
         const params: any = { page, limit };
         if (name) params.name = name;

@@ -1,5 +1,9 @@
 import * as React from "react";
-import { ContentDetailsProps } from "./types";
+
+interface ContentDetailsProps {
+  description: string;
+  last_updated: Date;
+}
 
 export const ContentDetails: React.FC<ContentDetailsProps> = ({
   description,

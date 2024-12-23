@@ -100,6 +100,10 @@ const AdminStudentsComponent = () => {
   }
 
   return (
+    <div>
+    <div className="mt-6 mb-6 text-center">
+        <h1 className="text-2xl font-bold text-black">Students</h1>
+    </div>
     <div className="container mx-auto p-4">
       <div className="mb-6">
         <input
@@ -146,6 +150,7 @@ const AdminStudentsComponent = () => {
             onPageClick={handlePageClick}
         />
       </div>
+    </div>
     </div>
   );
 }

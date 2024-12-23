@@ -71,7 +71,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-white shadow-md py-2 px-4 relative"> 
+    <header className="bg-white shadow-md py-2 px-4 relative z-[1]"> 
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex-1 flex justify-center md:order-1">
           <Link href="/" className="flex items-center justify-center">

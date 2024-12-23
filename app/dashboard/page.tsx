@@ -38,6 +38,11 @@ const DashboardPage = () => {
         } else {
           router.push('/login');
         }
+
+        if (role === 'admin') {
+          router.push('/dashboard/admin/courses');
+        }
+
       } catch (error) {
         console.error('Error fetching role:', error);
         router.push('/login');
@@ -47,7 +52,7 @@ const DashboardPage = () => {
     };
 
     fetchRole();
-  }, [router]);
+  }, [router, role]);
 
   if (isLoading) {
     return <div>Loading...</div>; 

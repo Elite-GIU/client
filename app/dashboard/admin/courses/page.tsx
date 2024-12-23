@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
-import MyCoursesComponent from '../../components/dashboard/student/MyCourses';
-import MyCoursesComponentInstructor from '../../components/dashboard/instructor/MyCourses';
+import MyCoursesComponent from '../../../components/dashboard/student/MyCourses';
+import MyCoursesComponentInstructor from '../../../components/dashboard/instructor/MyCourses';
 import AdminCoursesComponent from '@/app/components/admin/courses/AdminCourses';
 
 const CoursesPage = () => {

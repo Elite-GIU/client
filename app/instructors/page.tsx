@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Header from "../components/Header";
+import Loading from "../loading";
 
 interface Instructor {
   name: string;
@@ -86,7 +88,7 @@ const InstructorsPage = () => {
   };
 
   if (isLoading) {
-    return <div className="text-black">Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -94,32 +96,37 @@ const InstructorsPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      {Array.isArray(instructors) && instructors.length === 0 ? (
-        <div className="text-center text-gray-500 text-sm">
-          No instructors found.
+    <>
+    <Header />
+    
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <div className="container mx-auto p-4 relative">
+        <h1 className="text-2xl font-bold text-center mb-4 text-black">Meet Our Instructors</h1>
+        <p className="text-center text-gray-600 mb-6 text-black">
+          Discover experienced instructors across various fields.
+        </p>
+        <div className="relative text-black max-w-2xl mx-auto mb-8">
+          <input
+            type="text"
+            placeholder="Search instructors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-3 pl-12 bg-white rounded-lg shadow-sm border border-gray-200 focus:border-[#3D5A80] focus:ring-2 focus:ring-[#3D5A80] transition-all"
+          />
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.isArray(instructors) &&
-            instructors.map((instructor, index) => (
+        {Array.isArray(instructors) && instructors.length === 0 ? (
+          <div className="text-center text-gray-500 text-sm">No instructors found.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {instructors.map((instructor, index) => (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg shadow-md overflow-hidden"
+                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
               >
-                <div className="p-4">
-                  <h3 className="text-lg font-medium mt-2 text-black">{instructor.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{instructor.email}</p>
-                  <div className="mt-2">
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-2 text-black">{instructor.name}</h3>
+                  <p className="text-sm mb-2 text-black">{instructor.email}</p>
+                  <div className="mb-2">
                     <span className="text-gray-600 text-sm font-medium">Preferences:</span>
                     <ul className="list-disc ml-5 mt-1 text-sm text-gray-700 space-y-1">
                       {instructor.preferences.map((preference, index) => (
@@ -139,38 +146,49 @@ const InstructorsPage = () => {
                 </div>
               </div>
             ))}
-        </div>
-      )}
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 mx-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => (
+          </div>
+        )}
+        <div className="flex justify-center mt-6">
           <button
-            key={index}
-            onClick={() => handlePageClick(index + 1)}
-            className={`px-4 py-2 mx-1 ${
-              currentPage === index + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-300 text-gray-700"
-            } rounded`}
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 mx-1 bg-gray-300 text-black rounded disabled:opacity-50"
           >
-            {index + 1}
+            Previous
           </button>
-        ))}
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="px-4 py-2 mx-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageClick(index + 1)}
+              className={`px-4 py-2 mx-1 ${
+                currentPage === index + 1 ? "bg-[#3D5A80] text-white" : "bg-gray-300 text-black"
+              } rounded`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 mx-1 bg-gray-300 text-black rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
+    <footer className="flex gap-2.5 items-center w-full text-center text-black min-h-[96px] max-md:max-w-full">
+      <div className="flex overflow-hidden relative flex-wrap flex-1 shrink gap-4 items-start self-stretch my-auto w-full border-t basis-0 bg-zinc-100 border-zinc-300 min-h-[96px] min-w-[240px] max-md:max-w-full">
+        <div className="absolute z-0 text-xs leading-8 bottom-[21px] h-[31px] left-[650px] w-[263px]">
+          Copyright © 2024 tutorFlow. All rights reserved.
+        </div>
+        <div className="absolute z-0 h-8 text-base font-bold tracking-tight leading-5 left-[620px] top-[23px] w-[327px]">
+          <span className="text-slate-600">tutor</span>
+          <span className="text-slate-300">Flow</span>
+        </div>
+      </div>
+    </footer>
+    </>
   );
 };
 

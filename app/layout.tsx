@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="antialiased bg-gray-50">
+      <body className="antialiased bg-gray-50 overflow-x-hidden">
         <Suspense fallback={<Loading />}>
           {children}
         </Suspense>

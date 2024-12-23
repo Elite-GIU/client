@@ -53,7 +53,7 @@ const CoursePage =  (context : { params: Promise<Params>}) => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading state
+    return <div>Loading...</div>;
   }
 
   if (role === 'student') {

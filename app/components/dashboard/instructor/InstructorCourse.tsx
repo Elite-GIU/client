@@ -1,325 +1,297 @@
 'use client';
+
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation'; // Add useRouter for navigation
+import { useSidebarUpdate } from '@/app/components/dashboard/student/courses/SidebarContext';
+import { Pencil, Trash2, PlusCircle, ArrowLeft } from 'lucide-react';
 
 interface Module {
-   title: string;
-   nrOfQuestions: number;
-   assessmentType: string;
-   passingGrade: number;
-   _id: string;
+  title: string;
+  nrOfQuestions: number;
+  assessmentType: string;
+  passingGrade: number;
+  _id: string;
 }
 
-const InstructorCourse =  (props: any) => {
+const InstructorCourse = (props: any) => {
+  const router = useRouter(); // Initialize router for back navigation
+  const [course, setCourse] = useState<Array<Module>>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    nrOfQuestions: 1,
+    assessmentType: 'mcq',
+    passingGrade: 50,
+    courseId: props.id,
+    moduleId: '',
+  });
 
-    const [course, setCourse] = useState<Array<Module>>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [showForm, setShowForm] = useState(false);
-    const [showEdit, setShowEdit] = useState(false);
-    const [formData, setFormData] = useState({
-        title: '',
-        nrOfQuestions: 0,
-        assessmentType: 'mcq',
-        passingGrade: 50,
-        courseId: props.id
-    });
-    const [updateData, setUpdateData] = useState({
-        numberOfQuestions: 0,
-        assessmentType: 'mcq',
-        passingGrade: 50,
-        courseId: props.id,
-        moduleId: ''
-    })
+  const { triggerUpdate } = useSidebarUpdate();
 
-    const fetchCourse = async() => {
-
-        try {
-            
-            const token = Cookies.get('Token');
-            const response = await fetch(`/api/instructor/course/${props.id}`, {
-                method: 'GET',
-                headers: {Authorization: `Bearer ${token}`}
-            });
-
-            if(!response.ok)
-                throw new Error('Failed to fetch course');
-
-            const jsoned = await response.json()
-
-            setCourse(jsoned);
-
-        }catch(error){
-            setError((error as Error).message);
-        }finally{
-            setIsLoading(false);
-        }
-    }  
-
-    useEffect(() => {
-        const effect = async () => {
-            await fetchCourse();
-        }
-        effect();
-    }, []);
-
-    if (isLoading) {
-        return <div className="text-black">Loading...</div>;
+  const fetchCourse = async () => {
+    try {
+      const token = Cookies.get('Token');
+      const response = await axios.get(`/api/instructor/course/${props.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCourse(response.data);
+    } catch (error) {
+      setError('Failed to fetch course modules.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    if (error) {
-        return <div className="text-black">Error: {error}</div>;
-    }
+  };
 
-    const handleChange = (e: any) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: name === 'nrOfQuestions' || name === 'passingGrade' ? parseInt(value) : value });
+  };
 
-    const handleSubmit = async (e: any) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = Cookies.get('Token');
+    try {
+      if (isEdit) {
+        // Edit module API call
+        await axios.put(
+          `/api/instructor/course/${formData.courseId}/module/${formData.moduleId}`,
+          {
+            title: formData.title,
+            numberOfQuestions: formData.nrOfQuestions,
+            assessmentType: formData.assessmentType,
+            passingGrade: formData.passingGrade,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         
-        e.preventDefault();
+        setCourse((prev) =>
+          prev.map((module) =>
+            module._id === formData.moduleId ? { ...module, ...formData } : module
+          )
+        );
+      } else {
+        // Add new module API call
+        const response = await axios.post(
+          `/api/instructor/course/${formData.courseId}`,
+          {
+            title: formData.title,
+            nrOfQuestions: formData.nrOfQuestions,
+            assessmentType: formData.assessmentType,
+            passingGrade: formData.passingGrade,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        try {
-
-            const token = Cookies.get('Token');
-            const response = await fetch('/api/instructor/course/module', {
-                method: 'POST',
-                headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
-                body: JSON.stringify(formData)
-            });
-
-            if(response.ok){
-
-                alert('Module added successfully! Refresh the page to see the result');
-
-            }else {
-                const reason = await response.json();
-
-                alert('Error submitting Form! : ' + reason.error.message)
-            }
-        }catch(error){
-
-            console.error("Error: ", error);
-
+        console.log('response', response.data);
+        const newData = {
+          title: response.data.newModule.title,
+          nrOfQuestions: response.data.newModule.numberOfQuestions,
+          assessmentType: response.data.newModule.assessmentType,
+          passingGrade: response.data.newModule.passingGrade,
+          _id: response.data.newModule._id,
         }
+        setCourse((prev) => [...prev, newData]);
+      }
+      setShowModal(false);
+      triggerUpdate();
+    } catch (error) {
+      console.error('Error saving module:', error);
+      alert('Failed to save module.');
     }
+  };
+  
+  const handleEdit = (module: Module) => {
+    setFormData({
+      title: module.title,
+      nrOfQuestions: module.nrOfQuestions,
+      assessmentType: module.assessmentType,
+      passingGrade: module.passingGrade,
+      courseId: props.id,
+      moduleId: module._id,
+    });
+    setIsEdit(true);
+    setShowModal(true);
+  };
 
-    const handleUpdate = async (e: any) => {
+  const handleDelete = async (moduleId: string) => {
+    const token = Cookies.get('Token');
+    try {
+      await axios.delete(`/api/instructor/course/${formData.courseId}/module/${moduleId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCourse((prev) => prev.filter((module) => module._id !== moduleId));
+    triggerUpdate();
+    } catch (error) {
+      console.error('Error deleting module:', error);
+      alert('Failed to delete module.');
+    }
+  };
+  
+  useEffect(() => {
+    fetchCourse();
+  }, []);
 
-        e.preventDefault();
+  if (isLoading) {
+    return <div className="text-black">Loading...</div>;
+  }
 
-        try {
+  if (error) {
+    return <div className="text-black">{error}</div>;
+  }
 
-            const token = Cookies.get('Token');
-            const response = await fetch(`/api/instructor/course/module/${updateData.moduleId}`, {
-                method: 'PUT',
-                headers: {Authorization: `Bearer ${token}`, 'ContentType': 'application/json'},
-                body: JSON.stringify(updateData)
+  return (
+    <div className="p-8 space-y-6">
+    <h1 className="text-2xl font-bold text-black">Manage Modules</h1>
+    <div className="flex justify-between items-center">
+        <button
+        onClick={() => router.back()} 
+        className="flex items-center text-black bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 transition"
+        >
+        <ArrowLeft className="mr-2 w-5 h-5" />
+        Back
+        </button>
+        <button
+        onClick={() => {
+            setFormData({
+            title: '',
+            nrOfQuestions: 1,
+            assessmentType: 'mcq',
+            passingGrade: 50,
+            courseId: props.id,
+            moduleId: '',
             });
+            setIsEdit(false);
+            setShowModal(true);
+        }}
+        className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+        >
+        <PlusCircle className="mr-2 w-5 h-5" />
+        Add Module
+        </button>
+    </div>
 
-            if(response.ok){
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {course.map((module, index) => (
+        <div
+          key={module._id || `module-${index}`} 
+          className="bg-white shadow rounded-lg p-6 border border-gray-200 flex flex-col justify-between"
+        >
+          <div>
+            <h2 className="text-lg font-semibold text-black">{module.title}</h2>
+            <p className="text-sm text-black">Assessment Type: {module.assessmentType}</p>
+            <p className="text-sm text-black">Questions: {module.nrOfQuestions}</p>
+            <p className="text-sm text-black">Passing Grade: {module.passingGrade}%</p>
+          </div>
+          <div className="flex justify-end space-x-4 mt-4">
+            <button
+              onClick={() => handleEdit(module)}
+              className="text-blue-500 hover:underline"
+            >
+              <Pencil className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => handleDelete(module._id)}
+              className="text-red-500 hover:underline"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      ))}
+      </div>
 
-                alert('Module updated successfully! Refresh the page to see the result');
-
-            }else {
-
-                const reason = await response.json();
-
-                alert('Error submitting Form! : ' + reason.error.message)
-            }
-        }catch(error){
-
-            console.error("Error: ", error);
-
-        }
-
-    }
-    
-    const handleEditDataChange = async (e: any) => {
-        const { name, value } = e.target;
-        setUpdateData({ ...updateData, [name]: value });
-    }
-
-    const openEditMenu = async (module: Module) => {
-        const {nrOfQuestions, passingGrade, assessmentType, _id} = module;
-        if(module._id != updateData.moduleId)
-            setShowEdit(true);
-        else 
-            setShowEdit(!showEdit);
-        setShowForm(false);
-        setUpdateData({...updateData, numberOfQuestions: nrOfQuestions, passingGrade, assessmentType, moduleId: _id});
-    }
-
-    return (
-        <>
-        {course.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm">
-              No module found. Start by uploading a module!
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-black">
+                {isEdit ? 'Edit Module' : 'Add New Module'}
+              </h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                ✖
+              </button>
             </div>
-          ) : (
-            <div style={{alignContent: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {course.map((module) => (
-                    <div
-                    key={module.title}
-                    className="border border-gray-200 rounded-lg shadow-md"
-                    >
-                    <div className="p-4">
-                        <h3 className="text-lg font-medium mt-2 text-black">
-                        {module.title}
-                        </h3>
-                        {/* Truncate description to two lines */}
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Assessment Type: {module.assessmentType}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Number of questions: {module.nrOfQuestions}
-                        </p>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-1">
-                            Passing Grade: {module.passingGrade}
-                        </p>
-                        <a
-                            className="text-blue-600 text-sm font-medium hover:underline"
-                            style={{marginTop: '3rem'}} 
-                            onClick={() => openEditMenu(module)}
-                        >
-                            edit
-                        </a>
-                    </div>
-                    </div>
-                ))}
-                </div>
-                <a 
-                    className="text-blue-600 text-sm font-medium hover:underline"
-                    style={{marginTop: '2rem'}}
-                    onClick={() => {setShowForm(!showForm); setShowEdit(false)}}
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-black">Module Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Assessment Type</label>
+                <select
+                  name="assessmentType"
+                  value={formData.assessmentType}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
                 >
-                    {showForm? "Hide" : "Add Module"}
-                </a>
-                {
-                    showForm && 
-                    (
-                        <form
-                            onSubmit={handleSubmit}
-                            className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
-                            style={{ textAlign: 'left' }}
-                        >
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Title</label>
-                                <input
-                                type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Number of Questions</label>
-                                <input
-                                type="number"
-                                name="nrOfQuestions"
-                                value={formData.nrOfQuestions}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Assessment Type</label>
-                                <input
-                                type="text"
-                                name="assessmentType"
-                                value={formData.assessmentType}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Passing Grade</label>
-                                <input
-                                type="number"
-                                name="passingGrade"
-                                value={formData.passingGrade}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
-                            >
-                                Add
-                            </button>
-                        </form>
-                    )
-                }
-                {
-                    showEdit && 
-                    (
-                        <form
-                            onSubmit={handleUpdate}
-                            className="mt-4 p-4 border border-gray-300 rounded w-full max-w-md"
-                            style={{ textAlign: 'left' }}
-                        >
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Number of Questions</label>
-                                <input
-                                type="number"
-                                name="numberOfQuestions"
-                                value={updateData.numberOfQuestions}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Assessment Type</label>
-                                <input
-                                type="text"
-                                name="assessmentType"
-                                value={updateData.assessmentType}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="block text-sm font-medium text-gray-700">Passing Grade</label>
-                                <input
-                                type="number"
-                                name="passingGrade"
-                                value={updateData.passingGrade}
-                                onChange={handleEditDataChange}
-                                className="w-full border border-gray-300 rounded px-2 py-1 text-black"
-                                required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="bg-blue-600 text-white font-medium py-1 px-4 rounded hover:bg-blue-700"
-                            >
-                                Update
-                            </button>
-                        </form>
-                    )
-                }
-            </div>
-          )}
-        </>
-    );
-}
+                  <option value="mcq">Multiple Choice</option>
+                  <option value="project">Project</option>
+                  <option value="essay">Essay</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Number of Questions</label>
+                <input
+                  type="number"
+                  name="nrOfQuestions"
+                  value={formData.nrOfQuestions}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-black">Passing Grade (%)</label>
+                <input
+                  type="number"
+                  name="passingGrade"
+                  value={formData.passingGrade}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default InstructorCourse;
