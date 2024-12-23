@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, ReactNode } from 'react';
-import { usePathname, useRouter } from 'next/navigation';  // This import assumes next/navigation exists; otherwise, use next/router
+import { usePathname, useRouter } from 'next/navigation';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 import CourseSidebar from '../components/dashboard/student/courses/CoursesSidebar';
@@ -22,6 +22,12 @@ const instructorSidebarItems = [
   { name: 'Analytics', icon: <FaBook />, href: "/dashboard/analytics" },
   { name: 'My Courses', icon: <FaBook />, href: "/dashboard/courses" },
   { name: 'Profile', icon: <FaUserAlt />, href: "/dashboard/profile" }
+];
+
+const adminSidebarItems = [
+  { name: 'All Courses', icon: <FaBook />, href: "/dashboard/admin/courses" },
+  { name: 'All Students', icon: <FaUserAlt />, href: "/dashboard/admin/students" },
+  { name: 'Logs', icon: <FaQuestionCircle />, href: "/dashboard/admin/logs" }
 ];
 
 const Layout = ({ children }: { children: ReactNode }) => {
@@ -45,16 +51,16 @@ const Layout = ({ children }: { children: ReactNode }) => {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         const session = await response.json();
         if (session != token) {
           Cookies.remove('Token');
           router.push('/login');
           return;
         }
-         response = await fetch('/api/profile/role', {
+        response = await fetch('/api/profile/role', {
           method: 'GET',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (response.ok) {
           const data = await response.json();
@@ -83,19 +89,31 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <SidebarProvider>
-    <div className="flex flex-col h-screen">
-      <DashboardHeader toggleSidebar={() => setIsOpen(!isOpen)} isOpen={isOpen} />
-      <div className="flex flex-1 overflow-hidden">
-        {isCoursePage
-          ? <CourseSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-          : <DashboardSidebar items={role === 'instructor' ? instructorSidebarItems : studentSidebarItems} isOpen={isOpen} setIsOpen={setIsOpen} />}
-        <main className={`${isCoursePage ? "lg:ml-96" : "lg:ml-64"} flex-1 p-4 overflow-auto`}>
-          {children}
-        </main>
+      <div className="flex flex-col h-screen">
+        <DashboardHeader toggleSidebar={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <div className="flex flex-1 overflow-hidden">
+          {isCoursePage ? (
+            <CourseSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+          ) : (
+            <DashboardSidebar
+              items={
+                role === 'instructor'
+                  ? instructorSidebarItems
+                  : role === 'admin'
+                  ? adminSidebarItems
+                  : studentSidebarItems
+              }
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+            />
+          )}
+          <main className={`${isCoursePage ? 'lg:ml-96' : 'lg:ml-64'} flex-1 p-4 overflow-auto`}>
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
     </SidebarProvider>
   );
-}
+};
 
 export default Layout;
