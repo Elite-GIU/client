@@ -9,9 +9,9 @@ export async function DELETE(req: Request, context: { params: Promise<Params>}) 
     try {
         // Await the `params` object
 
-        const {id} = await context.params;
+        const {course_id} = await context.params;
 
-        if (!id) {
+        if (!course_id) {
         return NextResponse.json({ error: 'Course ID is required' }, { status: 400 });
         }
 
@@ -21,7 +21,7 @@ export async function DELETE(req: Request, context: { params: Promise<Params>}) 
             return NextResponse.json({ error: 'Authorization token is required' }, { status: 401 });
         }
 
-        const response = await axios.delete(`http://localhost:3001/api/v1/instructor/courses/${id}`, 
+        const response = await axios.delete(`http://localhost:3001/api/v1/instructor/courses/${course_id}`, 
             {
                 headers: {
                   Authorization: token,
